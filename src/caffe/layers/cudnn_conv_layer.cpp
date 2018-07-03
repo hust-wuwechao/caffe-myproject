@@ -1,7 +1,6 @@
 #ifdef USE_CUDNN
 #include <algorithm>
 #include <vector>
-
 #include "caffe/layers/cudnn_conv_layer.hpp"
 
 namespace caffe {
@@ -19,25 +18,42 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
   // Initialize CUDA streams and cuDNN.
-  stream_         = new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
-  handle_         = new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
+  //  这里面是new 一个为什么不直接进行赋值呢？
+
+
+ 
+    stream_         = new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
+    handle_         = new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
+ 
+ 
+
+
+
 
   // Initialize algorithm arrays
+  //  初始化算法数组
   fwd_algo_       = new cudnnConvolutionFwdAlgo_t[bottom.size()];
   bwd_filter_algo_= new cudnnConvolutionBwdFilterAlgo_t[bottom.size()];
   bwd_data_algo_  = new cudnnConvolutionBwdDataAlgo_t[bottom.size()];
 
   // initialize size arrays
+  // 
+
+
   workspace_fwd_sizes_ = new size_t[bottom.size()];
   workspace_bwd_filter_sizes_ = new size_t[bottom.size()];
   workspace_bwd_data_sizes_ = new size_t[bottom.size()];
 
   // workspace data
+
   workspaceSizeInBytes = 0;
   workspaceData = NULL;
   workspace = new void*[this->group_ * CUDNN_STREAMS_PER_GROUP];
 
-  for (size_t i = 0; i < bottom.size(); ++i) {
+
+
+  for (size_t i = 0; i < bottom.size(); ++i) 
+  {
     // initialize all to default algorithms
     fwd_algo_[i] = (cudnnConvolutionFwdAlgo_t)0;
     bwd_filter_algo_[i] = (cudnnConvolutionBwdFilterAlgo_t)0;
@@ -48,20 +64,28 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
     workspace_bwd_filter_sizes_[i] = 0;
   }
 
-  for (int g = 0; g < this->group_ * CUDNN_STREAMS_PER_GROUP; g++) {
+  //在这里面进行创建流
+  for (int g = 0; g < this->group_ * CUDNN_STREAMS_PER_GROUP; g++)
+  {
     CUDA_CHECK(cudaStreamCreate(&stream_[g]));
     CUDNN_CHECK(cudnnCreate(&handle_[g]));
     CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
     workspace[g] = NULL;
   }
 
+
+ 
   // Set the indexing parameters.
+
+
   bias_offset_ = (this->num_output_ / this->group_);
+
 
   // Create filter descriptor.
   const int* kernel_shape_data = this->kernel_shape_.cpu_data();
   const int kernel_h = kernel_shape_data[0];
   const int kernel_w = kernel_shape_data[1];
+
   cudnn::createFilterDesc<Dtype>(&filter_desc_,
       this->num_output_ / this->group_, this->channels_ / this->group_,
       kernel_h, kernel_w);
@@ -80,12 +104,132 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
   }
 
   // Tensor descriptor for bias.
-  if (this->bias_term_) {
+  if (this->bias_term_)
+  {
     cudnn::createTensor4dDesc<Dtype>(&bias_desc_);
   }
 
   handles_setup_ = true;
 }
+
+
+//  我们进行了全部的重构
+
+void CuDNNConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top,cudnnHandle_t* handle ,cudaStream_t*  stream) 
+{
+  ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
+  
+  
+  // Initialize CUDA streams and cuDNN.
+
+
+  //  这里面是new 一个为什么不直接进行赋值呢？
+
+
+     /* stream_  =  new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
+     handle_  =  new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];  */ 
+
+    stream_=stream;
+    handle_=handle;
+
+    
+ 
+ 
+
+
+
+
+  // Initialize algorithm arrays
+  //  初始化算法数组
+
+  fwd_algo_       = new cudnnConvolutionFwdAlgo_t[bottom.size()];
+  bwd_filter_algo_= new cudnnConvolutionBwdFilterAlgo_t[bottom.size()];
+  bwd_data_algo_  = new cudnnConvolutionBwdDataAlgo_t[bottom.size()];
+
+  // initialize size arrays
+  // 
+
+
+  workspace_fwd_sizes_ =        new size_t[bottom.size()];
+  workspace_bwd_filter_sizes_ = new size_t[bottom.size()];
+  workspace_bwd_data_sizes_ =   new size_t[bottom.size()];
+
+  // workspace data
+
+  workspaceSizeInBytes = 0;
+  workspaceData = NULL;
+  workspace = new void*[this->group_ * CUDNN_STREAMS_PER_GROUP];
+
+
+
+  for (size_t i = 0; i < bottom.size(); ++i) 
+  {
+    // initialize all to default algorithms
+    fwd_algo_[i] = (cudnnConvolutionFwdAlgo_t)0;
+    bwd_filter_algo_[i] = (cudnnConvolutionBwdFilterAlgo_t)0;
+    bwd_data_algo_[i] = (cudnnConvolutionBwdDataAlgo_t)0;
+    // default algorithms don't require workspace
+    workspace_fwd_sizes_[i] = 0;
+    workspace_bwd_data_sizes_[i] = 0;
+    workspace_bwd_filter_sizes_[i] = 0;
+  }
+
+  //在这里面进行创建流
+
+
+
+ /*  for (int g = 0; g < this->group_ * CUDNN_STREAMS_PER_GROUP; g++)
+  {
+    CUDA_CHECK(cudaStreamCreate(&stream_[g]));
+    CUDNN_CHECK(cudnnCreate(&handle_[g]));
+    CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
+    workspace[g] = NULL;
+  } */
+ 
+
+
+
+
+ 
+  // Set the indexing parameters.
+
+
+  bias_offset_ = (this->num_output_ / this->group_);
+
+
+  // Create filter descriptor.
+  const int* kernel_shape_data = this->kernel_shape_.cpu_data();
+  const int kernel_h = kernel_shape_data[0];
+  const int kernel_w = kernel_shape_data[1];
+
+  cudnn::createFilterDesc<Dtype>(&filter_desc_,
+      this->num_output_ / this->group_, this->channels_ / this->group_,
+      kernel_h, kernel_w);
+
+  // Create tensor descriptor(s) for data and corresponding convolution(s).
+  for (int i = 0; i < bottom.size(); i++) {
+    cudnnTensorDescriptor_t bottom_desc;
+    cudnn::createTensor4dDesc<Dtype>(&bottom_desc);
+    bottom_descs_.push_back(bottom_desc);
+    cudnnTensorDescriptor_t top_desc;
+    cudnn::createTensor4dDesc<Dtype>(&top_desc);
+    top_descs_.push_back(top_desc);
+    cudnnConvolutionDescriptor_t conv_desc;
+    cudnn::createConvolutionDesc<Dtype>(&conv_desc);
+    conv_descs_.push_back(conv_desc);
+  }
+
+  // Tensor descriptor for bias.
+  if (this->bias_term_)
+  {
+    cudnn::createTensor4dDesc<Dtype>(&bias_desc_);
+  }
+
+  handles_setup_ = true;
+}
+
+
+
 
 template <typename Dtype>
 void CuDNNConvolutionLayer<Dtype>::Reshape(
@@ -110,9 +254,12 @@ void CuDNNConvolutionLayer<Dtype>::Reshape(
 
   // Specify workspace limit for kernels directly until we have a
   // planning strategy and a rewrite of Caffe's GPU memory mangagement
+
   size_t workspace_limit_bytes = 8*1024*1024;
 
-  for (int i = 0; i < bottom.size(); i++) {
+
+  for (int i = 0; i < bottom.size(); i++) 
+  {
     cudnn::setTensor4dDesc<Dtype>(&bottom_descs_[i],
         this->num_,
         this->channels_ / this->group_, height, width,
@@ -230,6 +377,10 @@ void CuDNNConvolutionLayer<Dtype>::Reshape(
         1, this->num_output_ / this->group_, 1, 1);
   }
 }
+
+
+
+
 
 template <typename Dtype>
 CuDNNConvolutionLayer<Dtype>::~CuDNNConvolutionLayer() {

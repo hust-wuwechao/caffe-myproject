@@ -19,6 +19,8 @@
 
 namespace caffe {
 
+#define CUDNN_STREAMS_PER_GROUP 3
+#define GROUP 1
 template <typename Dtype>
 Net<Dtype>::Net(const NetParameter& param) {
   Init(param);
@@ -26,7 +28,8 @@ Net<Dtype>::Net(const NetParameter& param) {
 
 template <typename Dtype>
 Net<Dtype>::Net(const string& param_file, Phase phase,
-    const int level, const vector<string>* stages) {
+    const int level, const vector<string>* stages)
+ {
   NetParameter param;
   ReadNetParamsFromTextFileOrDie(param_file, &param);
   // Set phase, stages and level
@@ -41,23 +44,44 @@ Net<Dtype>::Net(const string& param_file, Phase phase,
 }
 
 template <typename Dtype>
-void Net<Dtype>::Init(const NetParameter& in_param) {
+void Net<Dtype>::Init(const NetParameter& in_param)
+ {
   // Set phase from the state.
+
+
+  // 初始化流参数。
+
+  stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+  {
+    CUDA_CHECK(cudaStreamCreate(&stream_[g]));
+    CUDNN_CHECK(cudnnCreate(&handle_[g]));
+    CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
+    workspace[g] = NULL;
+  }
+
   phase_ = in_param.state().phase();
   // Filter layers based on their include/exclude rules and
   // the current NetState.
   NetParameter filtered_param;
+
   FilterNet(in_param, &filtered_param);
+
   LOG_IF(INFO, Caffe::root_solver())
       << "Initializing net from parameters: " << std::endl
       << filtered_param.DebugString();
   // Create a copy of filtered_param with splits added where necessary.
   NetParameter param;
+
   InsertSplits(filtered_param, &param);
+
   // Basically, build all the layers and set up their connections.
   name_ = param.name();
+
   map<string, int> blob_name_to_idx;
   set<string> available_blobs;
+
   memory_used_ = 0;
   // For each layer, set up its input and output
   bottom_vecs_.resize(param.layer_size());
@@ -66,7 +90,8 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
   param_id_vecs_.resize(param.layer_size());
   top_id_vecs_.resize(param.layer_size());
   bottom_need_backward_.resize(param.layer_size());
-  for (int layer_id = 0; layer_id < param.layer_size(); ++layer_id) {
+  for (int layer_id = 0; layer_id < param.layer_size(); ++layer_id) 
+  {
     // Inherit phase from net if unset.
     if (!param.layer(layer_id).has_phase()) {
       param.mutable_layer(layer_id)->set_phase(phase_);
@@ -84,6 +109,11 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
     LOG_IF(INFO, Caffe::root_solver())
         << "Creating Layer " << layer_param.name();
     bool need_backward = false;
+     
+    //  这里面修
+
+  
+
 
     // Figure out this layer's input and output
     for (int bottom_id = 0; bottom_id < layer_param.bottom_size();
@@ -103,7 +133,7 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
         net_input_blobs_.push_back(blobs_[blob_id].get());
       }
     }
-    // If the layer specifies that AutoTopBlobs() -> true and the LayerParameter
+    // If the layer specifies that AutoTopBlobs() -> t汗，rue and the LayerParameter
     // specified fewer than the required number (as specified by
     // ExactNumTopBlobs() or MinTopBlobs()), allocate them here.
     Layer<Dtype>* layer = layers_[layer_id].get();
@@ -118,7 +148,18 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
       }
     }
     // After this layer is connected, set it up.
-    layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
+
+
+    
+    if(layer_param.name()=="CuDNNConvolutionLayer")
+    {
+         LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
+         layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream);
+    }
+    else
+    {
+        layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
+    }
     LOG_IF(INFO, Caffe::root_solver())
         << "Setting up " << layer_names_[layer_id];
     for (int top_id = 0; top_id < top_vecs_[layer_id].size(); ++top_id) {
@@ -149,13 +190,16 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
       layers_[layer_id]->set_param_propagate_down(param_id,
                                                   param_need_backward);
     }
-    for (int param_id = 0; param_id < num_param_blobs; ++param_id) {
+    for (int param_id = 0; param_id < num_param_blobs; ++param_id)
+   {
       AppendParam(param, layer_id, param_id);
     }
     // Finally, set the backward flag
     layer_need_backward_.push_back(need_backward);
-    if (need_backward) {
-      for (int top_id = 0; top_id < top_id_vecs_[layer_id].size(); ++top_id) {
+    if (need_backward) 
+    {
+      for (int top_id = 0; top_id < top_id_vecs_[layer_id].size(); ++top_id) 
+      {
         blob_need_backward_[top_id_vecs_[layer_id][top_id]] = true;
       }
     }
@@ -202,8 +246,10 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
       }
     }
     for (int bottom_id = 0; bottom_id < bottom_vecs_[layer_id].size();
-         ++bottom_id) {
-      if (layer_contributes_loss) {
+         ++bottom_id) 
+    {
+      if (layer_contributes_loss)
+       {
         const string& blob_name =
             blob_names_[bottom_id_vecs_[layer_id][bottom_id]];
         blobs_under_loss.insert(blob_name);
@@ -252,8 +298,11 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
   }
   ShareWeights();
   debug_info_ = param.debug_info();
+  
   LOG_IF(INFO, Caffe::root_solver()) << "Network initialization done.";
+
 }
+
 
 template <typename Dtype>
 void Net<Dtype>::FilterNet(const NetParameter& param,

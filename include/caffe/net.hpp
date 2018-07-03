@@ -335,6 +335,12 @@ class Net {
   vector<Callback*> after_forward_;
   vector<Callback*> before_backward_;
   vector<Callback*> after_backward_;
+  // 表示的流的向量
+  // 我们先假设用了6个流
+  // 分别用了前向的反向的过程。
+  // 采用手动的优化过程。
+  cudnnHandle_t* handle_;
+  cudaStream_t*  stream_;
 
 DISABLE_COPY_AND_ASSIGN(Net);
 };

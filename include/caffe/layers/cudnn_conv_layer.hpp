@@ -44,8 +44,14 @@ class CuDNNConvolutionLayer : public ConvolutionLayer<Dtype> {
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
   bool handles_setup_;
-  cudnnHandle_t* handle_;
-  cudaStream_t*  stream_;
+
+
+  cudnnHandle_t*  handle_;
+  cudaStream_t*   stream_;
+
+
+
+
 
   // algorithms for forward and backwards convolutions
   cudnnConvolutionFwdAlgo_t *fwd_algo_;
