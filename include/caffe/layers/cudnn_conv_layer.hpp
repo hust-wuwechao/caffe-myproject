@@ -35,6 +35,7 @@ class CuDNNConvolutionLayer : public ConvolutionLayer<Dtype> {
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   
+  
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream) ;
   
