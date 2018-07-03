@@ -111,7 +111,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
         << "Creating Layer " << layer_param.name();
     bool need_backward = false;
      
-    //  这里面修
+  
 
     // Figure out this layer's input and output
     for (int bottom_id = 0; bottom_id < layer_param.bottom_size();
@@ -149,14 +149,17 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
 
     
-    if(layer_param.name()=="CuDNNConvolutionLayer")
+   /*  if(layer_param.name()=="CuDNNConvolutionLayer")
     {
          LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
          layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);
     }
-    else
+    else */
     {
+       LOG_IF(INFO, Caffe::root_solver())
+        << "" << layer_names_[layer_id];
       layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
+
     }
     LOG_IF(INFO, Caffe::root_solver())
         << "Setting up " << layer_names_[layer_id];
