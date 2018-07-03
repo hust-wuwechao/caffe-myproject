@@ -67,7 +67,11 @@ class ConvolutionLayer : public BaseConvolutionLayer<Dtype> {
   virtual inline const char* type() const { return "Convolution"; }
 
  protected:
- 
+  // 这四种函数是就卷积必须学会的的。
+  //
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream) ;
+
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
