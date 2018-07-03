@@ -53,12 +53,13 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
   stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+
   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
   {
     CUDA_CHECK(cudaStreamCreate(&stream_[g]));
     CUDNN_CHECK(cudnnCreate(&handle_[g]));
     CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
-    workspace[g] = NULL;
+    //workspace[g] = NULL;
   }
 
   phase_ = in_param.state().phase();
@@ -151,11 +152,11 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     if(layer_param.name()=="CuDNNConvolutionLayer")
     {
          LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
-         layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream);
+         layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);
     }
     else
     {
-        layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
+      layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
     }
     LOG_IF(INFO, Caffe::root_solver())
         << "Setting up " << layer_names_[layer_id];

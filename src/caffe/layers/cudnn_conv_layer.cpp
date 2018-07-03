@@ -117,9 +117,9 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
 template <typename Dtype>
 void CuDNNConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream) 
 {
+
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
-  
-  
+ 
   // Initialize CUDA streams and cuDNN.
 
 
@@ -186,7 +186,13 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom
     workspace[g] = NULL;
   } */
  
-
+   for (int g = 0; g < this->group_ * CUDNN_STREAMS_PER_GROUP; g++)
+   {
+     //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
+     //CUDNN_CHECK(cudnnCreate(&handle_[g]));
+     //CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
+     workspace[g] = NULL;
+   }
 
 
 
