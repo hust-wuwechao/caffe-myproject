@@ -156,8 +156,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     }
     else */
     {
+      
        LOG_IF(INFO, Caffe::root_solver())
-        << "" << layer_names_[layer_id];
+        << "" << layers_[layer_id]->type();
       layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
 
     }
