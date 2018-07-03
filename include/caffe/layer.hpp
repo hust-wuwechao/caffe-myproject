@@ -411,13 +411,16 @@ class Layer {
 // functions.
 template <typename Dtype>
 inline Dtype Layer<Dtype>::Forward(const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top) {
+    const vector<Blob<Dtype>*>& top)
+ {
   Dtype loss = 0;
   Reshape(bottom, top);
-  switch (Caffe::mode()) {
+  switch (Caffe::mode()) 
+  {
   case Caffe::CPU:
     Forward_cpu(bottom, top);
-    for (int top_id = 0; top_id < top.size(); ++top_id) {
+    for (int top_id = 0; top_id < top.size(); ++top_id) 
+    {
       if (!this->loss(top_id)) { continue; }
       const int count = top[top_id]->count();
       const Dtype* data = top[top_id]->cpu_data();
@@ -428,12 +431,17 @@ inline Dtype Layer<Dtype>::Forward(const vector<Blob<Dtype>*>& bottom,
   case Caffe::GPU:
     Forward_gpu(bottom, top);
 #ifndef CPU_ONLY
-    for (int top_id = 0; top_id < top.size(); ++top_id) {
-      if (!this->loss(top_id)) { continue; }
+    for (int top_id = 0; top_id < top.size(); ++top_id)
+     {
+      
+      if (!this->loss(top_id)) 
+      { continue; }
+      //  每一层的损失原来是这样计算的。
       const int count = top[top_id]->count();
       const Dtype* data = top[top_id]->gpu_data();
       const Dtype* loss_weights = top[top_id]->gpu_diff();
       Dtype blob_loss = 0;
+      //  采用这样计算点积。太厉害了。
       caffe_gpu_dot(count, data, loss_weights, &blob_loss);
       loss += blob_loss;
     }

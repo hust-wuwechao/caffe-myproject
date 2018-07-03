@@ -105,6 +105,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           << "propagate_down param must be specified "
           << "either 0 or bottom_size times ";
     }
+
     layers_.push_back(LayerRegistry<Dtype>::CreateLayer(layer_param));
     layer_names_.push_back(layer_param.name());
     LOG_IF(INFO, Caffe::root_solver())
@@ -565,17 +566,47 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
 
 template <typename Dtype>
 Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
+
+  LOG_IF(INFO, Caffe::root_solver())
+        << "Dtype Net<Dtype>::ForwardFromTo(int start, int end) ";
   CHECK_GE(start, 0);
   CHECK_LT(end, layers_.size());
   Dtype loss = 0;
-  for (int i = start; i <= end; ++i) {
-    for (int c = 0; c < before_forward_.size(); ++c) {
+  
+  for (int i = start; i <= end; ++i)
+   {
+    LOG_IF(INFO, Caffe::root_solver())
+        << "before_forward_.size() "<<before_forward_.size();
+    for (int c = 0; c < before_forward_.size(); ++c) 
+    {
+      //  这是干嘛？？？？？？？
+      
       before_forward_[c]->run(i);
     }
+    //
+
+    //  返回损失。
     Dtype layer_loss = layers_[i]->Forward(bottom_vecs_[i], top_vecs_[i]);
+
+    LOG_IF(INFO, Caffe::root_solver())
+        << "typeid(x).name() "<<typeid(*layers_[i]).name(); 
+    //printf("typeid(x).name() is %s\n",typeid(x).name());
+
+
+    //  
+    LOG_IF(INFO, Caffe::root_solver())
+        << "layer_loss "<<layer_loss; 
     loss += layer_loss;
-    if (debug_info_) { ForwardDebugInfo(i); }
-    for (int c = 0; c < after_forward_.size(); ++c) {
+
+
+
+    if (debug_info_)
+    { ForwardDebugInfo(i); }
+    LOG_IF(INFO, Caffe::root_solver())
+        << "after_forward_.size() "<<after_forward_.size();
+    for (int c = 0; c < after_forward_.size(); ++c) 
+    {
+      //  这又是干嘛？？？？？
       after_forward_[c]->run(i);
     }
   }
