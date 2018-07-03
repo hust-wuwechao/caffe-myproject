@@ -112,9 +112,6 @@ void Net<Dtype>::Init(const NetParameter& in_param)
      
     //  这里面修
 
-  
-
-
     // Figure out this layer's input and output
     for (int bottom_id = 0; bottom_id < layer_param.bottom_size();
          ++bottom_id) {

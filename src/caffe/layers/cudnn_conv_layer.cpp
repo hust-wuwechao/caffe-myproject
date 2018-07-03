@@ -115,7 +115,7 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
 
 //  我们进行了全部的重构
 
-void CuDNNConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top,cudnnHandle_t* handle ,cudaStream_t*  stream) 
+void CuDNNConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top,cudnnHandle_t* handle , cudaStream_t*  stream) 
 {
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
   
