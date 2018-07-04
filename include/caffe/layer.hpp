@@ -17,7 +17,8 @@
  */
 namespace boost { class mutex; }
 
-namespace caffe {
+namespace caffe 
+{
 
 /**
  * @brief An interface for the units of computation which can be composed into a
