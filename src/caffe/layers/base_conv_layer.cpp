@@ -185,7 +185,7 @@ void BaseConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 
 
-template <typename Dtype>
+/* template <typename Dtype>
 void BaseConvolutionLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
@@ -360,7 +360,7 @@ void BaseConvolutionLayer<Dtype>::LayerSetUp(
   weight_offset_ = conv_out_channels_ * kernel_dim_ / group_;
   // Propagate gradients to the parameters (as directed by backward pass).
   this->param_propagate_down_.resize(this->blobs_.size(), true);
-}
+} */
 
 
 
