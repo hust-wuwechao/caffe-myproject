@@ -162,7 +162,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
         << "" << layers_[layer_id]->type();
 
       LOG_IF(INFO, Caffe::root_solver())
-        << "typeid(x).name() "<<typeid(*layers_[i]).name();
+        << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
       layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
 
     }
