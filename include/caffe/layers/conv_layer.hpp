@@ -72,9 +72,9 @@ class ConvolutionLayer : public BaseConvolutionLayer<Dtype> {
 
   /* virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream) ; */
- virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream);
-    
+ /* virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream); */
+
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 

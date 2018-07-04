@@ -115,14 +115,18 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
 
 //  我们进行了全部的重构
 template <typename Dtype>
-void CuDNNConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top, cudnnHandle_t* handle , cudaStream_t*  stream) 
+void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, 
+    cudnnHandle_t* handle, 
+    cudaStream_t*  stream) 
 {
 
+   //先调用父类的设置函数
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
- 
+  
+
   // Initialize CUDA streams and cuDNN.
-
-
   //  这里面是new 一个为什么不直接进行赋值呢？
 
 
