@@ -66,9 +66,20 @@ class Layer {
    * This method may not be overridden.
    */
   void SetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
+      const vector<Blob<Dtype>*>& top) 
+  {
     CheckBlobCounts(bottom, top);
     LayerSetUp(bottom, top);
+    Reshape(bottom, top);
+    SetLossWeights(top);
+  }
+   void SetUp(const vector<Blob<Dtype>*>& bottom,
+              const vector<Blob<Dtype>*>& top,
+              cudnnHandle_t* handle , 
+               cudaStream_t*  stream
+              ) {
+    CheckBlobCounts(bottom, top);
+    LayerSetUp(bottom, top,handle,stream);
     Reshape(bottom, top);
     SetLossWeights(top);
   }

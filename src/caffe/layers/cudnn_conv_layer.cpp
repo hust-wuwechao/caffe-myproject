@@ -16,7 +16,9 @@ namespace caffe {
 template <typename Dtype>
 void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+  
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
+
   // Initialize CUDA streams and cuDNN.
   //  这里面是new 一个为什么不直接进行赋值呢？
 
