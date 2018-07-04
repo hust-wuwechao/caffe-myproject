@@ -132,11 +132,11 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
   //  这里面是new 一个为什么不直接进行赋值呢？
 
 
-     /* stream_  =  new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
-     handle_  =  new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];  */ 
+     stream_  =   new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
+     handle_  =   new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];  
 
-    stream_=stream;
-    handle_=handle;
+     stream_=stream;
+     handle_=handle;
 
     
  
