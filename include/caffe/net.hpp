@@ -21,7 +21,8 @@ namespace caffe {
  * TODO(dox): more thorough description.
  */
 template <typename Dtype>
-class Net {
+class Net 
+{
  public:
   explicit Net(const NetParameter& param);
   explicit Net(const string& param_file, Phase phase,
@@ -31,10 +32,14 @@ class Net {
   /// @brief Initialize a network with a NetParameter.
   void Init(const NetParameter& param);
 
+
+
   /**
    * @brief Run Forward and return the result.
    *
    */
+
+
   const vector<Blob<Dtype>*>& Forward(Dtype* loss = NULL);
   /// @brief DEPRECATED; use Forward() instead.
   const vector<Blob<Dtype>*>& ForwardPrefilled(Dtype* loss = NULL) {
@@ -52,7 +57,9 @@ class Net {
    * included.
    */
   Dtype ForwardFromTo(int start, int end);
+
   Dtype ForwardFrom(int start);
+
   Dtype ForwardTo(int end);
   /// @brief DEPRECATED; set input blobs then use Forward() instead.
   const vector<Blob<Dtype>*>& Forward(const vector<Blob<Dtype>* > & bottom,
