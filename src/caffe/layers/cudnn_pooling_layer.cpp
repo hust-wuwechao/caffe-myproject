@@ -26,7 +26,7 @@ void CuDNNPoolingLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     cudnnHandle_t* handle,
     cudaStream_t*  stream) 
 {
-    LOG(INFO)<<"进入CuDNNPoolingLayer<Dtype>::LayerSetUp1";
+  LOG(INFO)<<"进入CuDNNPoolingLayer<Dtype>::LayerSetUp1";
   PoolingLayer<Dtype>::LayerSetUp(bottom, top);
   CUDNN_CHECK(cudnnCreate(&handle_));
   //handle_=handle[0];
@@ -64,7 +64,7 @@ CuDNNPoolingLayer<Dtype>::~CuDNNPoolingLayer() {
   cudnnDestroyTensorDescriptor(bottom_desc_);
   cudnnDestroyTensorDescriptor(top_desc_);
   cudnnDestroyPoolingDescriptor(pooling_desc_);
-  //cudnnDestroy(handle_);
+  cudnnDestroy(handle_);
 }
 
 INSTANTIATE_CLASS(CuDNNPoolingLayer);

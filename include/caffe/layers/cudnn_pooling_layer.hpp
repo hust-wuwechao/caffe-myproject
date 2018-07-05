@@ -28,8 +28,8 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
   virtual void LayerSetUp1(
      const vector<Blob<Dtype>*>& bottom,
      const vector<Blob<Dtype>*>& top, 
-     cudnnHandle_t* handle, 
-     cudaStream_t*  stream
+     cudnnHandle_t*  handle, 
+     cudaStream_t*   stream
   );
 
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
