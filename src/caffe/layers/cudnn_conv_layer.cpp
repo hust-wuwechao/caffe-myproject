@@ -237,6 +237,7 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
   }
 
   // Tensor descriptor for bias.
+
   if (this->bias_term_)
   {
     cudnn::createTensor4dDesc<Dtype>(&bias_desc_);
@@ -400,29 +401,37 @@ void CuDNNConvolutionLayer<Dtype>::Reshape(
 
 
 template <typename Dtype>
-CuDNNConvolutionLayer<Dtype>::~CuDNNConvolutionLayer() {
+CuDNNConvolutionLayer<Dtype>::~CuDNNConvolutionLayer() 
+{
   // Check that handles have been setup before destroying.
-  if (!handles_setup_) { return; }
+  if (!handles_setup_) 
+  { return; }
 
-  for (int i = 0; i < bottom_descs_.size(); i++) {
-    cudnnDestroyTensorDescriptor(bottom_descs_[i]);
-    cudnnDestroyTensorDescriptor(top_descs_[i]);
-    cudnnDestroyConvolutionDescriptor(conv_descs_[i]);
+  for (int i = 0; i < bottom_descs_.size(); i++) 
+  {
+     cudnnDestroyTensorDescriptor(bottom_descs_[i]);
+     cudnnDestroyTensorDescriptor(top_descs_[i]);
+     cudnnDestroyConvolutionDescriptor(conv_descs_[i]);
   }
-  if (this->bias_term_) {
+  if (this->bias_term_) 
+  {
     cudnnDestroyTensorDescriptor(bias_desc_);
   }
   cudnnDestroyFilterDescriptor(filter_desc_);
 
-  for (int g = 0; g < this->group_ * CUDNN_STREAMS_PER_GROUP; g++) {
-    cudaStreamDestroy(stream_[g]);
-    cudnnDestroy(handle_[g]);
-  }
+
+ /*  
+    for (int g = 0; g < this->group_ * CUDNN_STREAMS_PER_GROUP; g++) 
+    {
+       cudaStreamDestroy(stream_[g]);
+       cudnnDestroy(handle_[g]);
+    } 
+ */
 
   cudaFree(workspaceData);
   delete [] workspace;
-  delete [] stream_;
-  delete [] handle_;
+  //delete [] stream_;
+  //delete [] handle_;
   delete [] fwd_algo_;
   delete [] bwd_filter_algo_;
   delete [] bwd_data_algo_;

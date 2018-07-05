@@ -17,6 +17,9 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/util/upgrade_proto.hpp"
 
+
+
+
 namespace caffe {
 
 #define CUDNN_STREAMS_PER_GROUP 3
@@ -51,6 +54,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
   // 初始化流参数。
 
+
   stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
 
@@ -75,6 +79,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       << "Initializing net from parameters: " << std::endl
       << filtered_param.DebugString();
   // Create a copy of filtered_param with splits added where necessary.
+  
   NetParameter param;
 
   InsertSplits(filtered_param, &param);
@@ -87,38 +92,57 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
   memory_used_ = 0;
   // For each layer, set up its input and output
+
   bottom_vecs_.resize(param.layer_size());
+
   top_vecs_.resize(param.layer_size());
+
   bottom_id_vecs_.resize(param.layer_size());
+
   param_id_vecs_.resize(param.layer_size());
+
   top_id_vecs_.resize(param.layer_size());
+
   bottom_need_backward_.resize(param.layer_size());
+
   for (int layer_id = 0; layer_id < param.layer_size(); ++layer_id) 
   {
     // Inherit phase from net if unset.
-    if (!param.layer(layer_id).has_phase()) {
+
+
+    if (!param.layer(layer_id).has_phase()) 
+    {
+
       param.mutable_layer(layer_id)->set_phase(phase_);
+
+
     }
     // Setup layer.
+
     const LayerParameter& layer_param = param.layer(layer_id);
-    if (layer_param.propagate_down_size() > 0) {
+    if (layer_param.propagate_down_size() > 0) 
+    {
+
       CHECK_EQ(layer_param.propagate_down_size(),
           layer_param.bottom_size())
           << "propagate_down param must be specified "
           << "either 0 or bottom_size times ";
     }
-
     layers_.push_back(LayerRegistry<Dtype>::CreateLayer(layer_param));
+
     layer_names_.push_back(layer_param.name());
+
     LOG_IF(INFO, Caffe::root_solver())
         << "Creating Layer " << layer_param.name();
+
     bool need_backward = false;
      
   
 
     // Figure out this layer's input and output
     for (int bottom_id = 0; bottom_id < layer_param.bottom_size();
-         ++bottom_id) {
+         ++bottom_id) 
+   {
       const int blob_id = AppendBottom(param, layer_id, bottom_id,
                                        &available_blobs, &blob_name_to_idx);
       // If a blob needs backward, this layer should provide it.
@@ -412,28 +436,37 @@ bool Net<Dtype>::StateMeetsRule(const NetState& state,
 template <typename Dtype>
 void Net<Dtype>::AppendTop(const NetParameter& param, const int layer_id,
                            const int top_id, set<string>* available_blobs,
-                           map<string, int>* blob_name_to_idx) {
+                           map<string, int>* blob_name_to_idx) 
+{
   shared_ptr<LayerParameter> layer_param(
       new LayerParameter(param.layer(layer_id)));
+  
   const string& blob_name = (layer_param->top_size() > top_id) ?
       layer_param->top(top_id) : "(automatic)";
+  
   // Check if we are doing in-place computation
   if (blob_name_to_idx && layer_param->bottom_size() > top_id &&
-      blob_name == layer_param->bottom(top_id)) {
+      blob_name == layer_param->bottom(top_id)) 
+  {
     // In-place computation
     LOG_IF(INFO, Caffe::root_solver())
         << layer_param->name() << " -> " << blob_name << " (in-place)";
     top_vecs_[layer_id].push_back(blobs_[(*blob_name_to_idx)[blob_name]].get());
     top_id_vecs_[layer_id].push_back((*blob_name_to_idx)[blob_name]);
-  } else if (blob_name_to_idx &&
-             blob_name_to_idx->find(blob_name) != blob_name_to_idx->end()) {
+  }
+  else if (blob_name_to_idx &&
+             blob_name_to_idx->find(blob_name) != blob_name_to_idx->end()) 
+  {
     // If we are not doing in-place computation but have duplicated blobs,
     // raise an error.
     LOG(FATAL) << "Top blob '" << blob_name
                << "' produced by multiple sources.";
-  } else {
+  } 
+  else 
+  {
     // Normal output.
-    if (Caffe::root_solver()) {
+    if (Caffe::root_solver()) 
+    {
       LOG(INFO) << layer_param->name() << " -> " << blob_name;
     }
     shared_ptr<Blob<Dtype> > blob_pointer(new Blob<Dtype>());
@@ -450,9 +483,12 @@ void Net<Dtype>::AppendTop(const NetParameter& param, const int layer_id,
 
 // Helper for Net::Init: add a new bottom blob to the net.
 template <typename Dtype>
-int Net<Dtype>::AppendBottom(const NetParameter& param, const int layer_id,
-    const int bottom_id, set<string>* available_blobs,
-    map<string, int>* blob_name_to_idx) {
+int Net<Dtype>::AppendBottom(const NetParameter& param, 
+    const int layer_id,
+    const int bottom_id, 
+    set<string>* available_blobs,
+    map<string, int>* blob_name_to_idx)
+ {
   const LayerParameter& layer_param = param.layer(layer_id);
   const string& blob_name = layer_param.bottom(bottom_id);
   if (available_blobs->find(blob_name) == available_blobs->end()) {
@@ -993,7 +1029,8 @@ void Net<Dtype>::ToHDF5(const string& filename, bool write_diff) const {
 
 template <typename Dtype>
 void Net<Dtype>::Update() {
-  for (int i = 0; i < learnable_params_.size(); ++i) {
+  for (int i = 0; i < learnable_params_.size(); ++i) 
+  {
     learnable_params_[i]->Update();
   }
 }

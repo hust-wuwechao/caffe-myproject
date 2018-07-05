@@ -79,7 +79,7 @@ class Layer {
               cudaStream_t*  stream) 
   {
     CheckBlobCounts(bottom, top);
-    LayerSetUp1(bottom,top,handle,stream);
+    LayerSetUp(bottom,top,handle,stream);
     Reshape(bottom, top);
     SetLossWeights(top);
 
@@ -365,7 +365,8 @@ class Layer {
    * the {ExactNum,Min,Max}{Bottom,Top}Blobs() functions.
    */
   virtual void CheckBlobCounts(const vector<Blob<Dtype>*>& bottom,
-                               const vector<Blob<Dtype>*>& top) {
+                               const vector<Blob<Dtype>*>& top) 
+    {
     if (ExactNumBottomBlobs() >= 0) {
       CHECK_EQ(ExactNumBottomBlobs(), bottom.size())
           << type() << " Layer takes " << ExactNumBottomBlobs()

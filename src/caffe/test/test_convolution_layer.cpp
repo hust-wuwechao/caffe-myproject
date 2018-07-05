@@ -157,7 +157,8 @@ class ConvolutionLayerTest : public MultiDeviceTest<TypeParam> {
         blob_bottom_2_(new Blob<Dtype>(2, 3, 6, 4)),
         blob_top_(new Blob<Dtype>()),
         blob_top_2_(new Blob<Dtype>()) {}
-  virtual void SetUp() {
+  virtual void SetUp() 
+  {
     // fill the values
     FillerParameter filler_param;
     filler_param.set_value(1.);

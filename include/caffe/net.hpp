@@ -58,9 +58,13 @@ class Net
    */
   Dtype ForwardFromTo(int start, int end);
 
+
   Dtype ForwardFrom(int start);
 
+
   Dtype ForwardTo(int end);
+
+  
   /// @brief DEPRECATED; set input blobs then use Forward() instead.
   const vector<Blob<Dtype>*>& Forward(const vector<Blob<Dtype>* > & bottom,
       Dtype* loss = NULL);
