@@ -33,12 +33,12 @@ class CuDNNConvolutionLayer : public ConvolutionLayer<Dtype>
   explicit CuDNNConvolutionLayer(const LayerParameter& param)
       : ConvolutionLayer<Dtype>(param), handles_setup_(false) {}
 
-  virtual void LayerSetUp(
+  virtual void   LayerSetUp(
       const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   
 
-  virtual void LayerSetUp1(
+  virtual void   LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
     cudnnHandle_t* handle , 

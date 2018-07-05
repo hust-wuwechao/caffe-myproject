@@ -117,7 +117,7 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
 
 //  我们进行了全部的重构
 template <typename Dtype>
-void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
+void CuDNNConvolutionLayer<Dtype>::LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
     cudnnHandle_t* handle, 
@@ -125,7 +125,7 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
 {
 
    //先调用父类的设置函数
-   
+
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
   
 
