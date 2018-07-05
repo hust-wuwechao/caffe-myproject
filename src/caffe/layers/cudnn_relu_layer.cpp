@@ -25,6 +25,8 @@ void CuDNNReLULayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     cudnnHandle_t* handle ,
     cudaStream_t*  stream) 
  {
+
+  LOG(INFO)<<"进入CuDNNReLULayer<Dtype>::LayerSetUp1";
   ReLULayer<Dtype>::LayerSetUp(bottom, top);
   // initialize cuDNN
   handle_=handle[0];
