@@ -20,7 +20,7 @@ void CuDNNPoolingLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   handles_setup_ = true;
 }
 
-
+template <typename Dtype>
 void CuDNNPoolingLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top,
     cudnnHandle_t* handle ,
