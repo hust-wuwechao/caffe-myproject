@@ -125,6 +125,7 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
 {
 
    //先调用父类的设置函数
+   
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
   
 

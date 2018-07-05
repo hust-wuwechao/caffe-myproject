@@ -38,7 +38,7 @@ class CuDNNConvolutionLayer : public ConvolutionLayer<Dtype>
       const vector<Blob<Dtype>*>& top);
   
 
-  virtual void LayerSetUp(
+  virtual void LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
     cudnnHandle_t* handle , 

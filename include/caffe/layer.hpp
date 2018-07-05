@@ -79,7 +79,7 @@ class Layer {
               cudaStream_t*  stream) 
   {
     CheckBlobCounts(bottom, top);
-    LayerSetUp(bottom,top,handle,stream);
+    LayerSetUp1(bottom,top,handle,stream);
     Reshape(bottom, top);
     SetLossWeights(top);
 
@@ -106,13 +106,13 @@ class Layer {
       {}
 
 
-   virtual void LayerSetUp(
+   virtual void LayerSetUp1(
     const vector<Blob<Dtype>*>&  bottom,
     const vector<Blob<Dtype>*>&  top, 
     cudnnHandle_t*  handle, 
     cudaStream_t*  stream)
     {} 
-    
+
   /**
    * @brief Adjust the shapes of top blobs and internal buffers to accommodate
    *        the shapes of the bottom blobs.
