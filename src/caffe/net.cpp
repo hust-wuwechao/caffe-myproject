@@ -176,7 +176,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
 
     
-      if(layers_[layer_id]->type()=="Convolution")
+      if(layers_[layer_id]->type()=="Convolution"||
+          layers_[layer_id]->type()=="ReLU"||
+          layers_[layer_id]->type()=="Pooling")
     {
          LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
          layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);
@@ -244,7 +246,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   // computation for the entire layer
   set<string> blobs_under_loss;
   set<string> blobs_skip_backp;
-  for (int layer_id = layers_.size() - 1; layer_id >= 0; --layer_id) {
+  for (int layer_id = layers_.size() - 1; layer_id >= 0; --layer_id)
+   {
     bool layer_contributes_loss = false;
     bool layer_skip_propagate_down = true;
     for (int top_id = 0; top_id < top_vecs_[layer_id].size(); ++top_id) {

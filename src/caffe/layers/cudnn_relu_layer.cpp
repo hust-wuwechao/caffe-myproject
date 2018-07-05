@@ -7,10 +7,27 @@ namespace caffe {
 
 template <typename Dtype>
 void CuDNNReLULayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
+      const vector<Blob<Dtype>*>& top) 
+ {
   ReLULayer<Dtype>::LayerSetUp(bottom, top);
   // initialize cuDNN
   CUDNN_CHECK(cudnnCreate(&handle_));
+  cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
+  cudnn::createTensor4dDesc<Dtype>(&top_desc_);
+  cudnn::createActivationDescriptor<Dtype>(&activ_desc_, CUDNN_ACTIVATION_RELU);
+  handles_setup_ = true;
+}
+
+
+void CuDNNReLULayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+    cudnnHandle_t* handle ,
+    cudaStream_t*  stream) 
+ {
+  ReLULayer<Dtype>::LayerSetUp(bottom, top);
+  // initialize cuDNN
+  handle_=handle;
+  //CUDNN_CHECK(cudnnCreate(&handle_));
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
   cudnn::createActivationDescriptor<Dtype>(&activ_desc_, CUDNN_ACTIVATION_RELU);
@@ -37,7 +54,8 @@ CuDNNReLULayer<Dtype>::~CuDNNReLULayer() {
   cudnnDestroyTensorDescriptor(this->bottom_desc_);
   cudnnDestroyTensorDescriptor(this->top_desc_);
   cudnnDestroyActivationDescriptor(this->activ_desc_);
-  cudnnDestroy(this->handle_);
+  
+  //cudnnDestroy(this->handle_);
 }
 
 INSTANTIATE_CLASS(CuDNNReLULayer);
