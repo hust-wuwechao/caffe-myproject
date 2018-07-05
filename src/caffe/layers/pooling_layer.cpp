@@ -12,7 +12,8 @@ using std::max;
 
 template <typename Dtype>
 void PoolingLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
+      const vector<Blob<Dtype>*>& top) 
+{
   PoolingParameter pool_param = this->layer_param_.pooling_param();
   if (pool_param.global_pooling()) {
     CHECK(!(pool_param.has_kernel_size() ||
