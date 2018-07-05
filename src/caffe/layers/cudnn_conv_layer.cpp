@@ -124,8 +124,11 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp1(
     cudaStream_t*  stream) 
 {
 
-   //先调用父类的设置函数
 
+  LOG_IF(INFO, Caffe::root_solver())
+        << "CuDNNConvolutionLayer<Dtype>::LayerSetUp1 ";
+   //先调用父类的设置函数
+  
   ConvolutionLayer<Dtype>::LayerSetUp(bottom, top);
   
 
