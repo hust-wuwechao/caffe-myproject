@@ -21,14 +21,16 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
  public:
   explicit CuDNNPoolingLayer(const LayerParameter& param)
       : PoolingLayer<Dtype>(param), handles_setup_(false) {}
-  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+  virtual void LayerSetUp(
+      const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
-  virtual void   LayerSetUp1(
-    const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top, 
-    cudnnHandle_t* handle , 
-    cudaStream_t*  stream);
+  virtual void LayerSetUp1(
+     const vector<Blob<Dtype>*>& bottom,
+     const vector<Blob<Dtype>*>& top, 
+     cudnnHandle_t* handle, 
+     cudaStream_t*  stream
+  );
 
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);

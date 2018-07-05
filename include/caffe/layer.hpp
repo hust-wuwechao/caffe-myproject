@@ -82,7 +82,6 @@ class Layer {
     LayerSetUp1(bottom,top,handle,stream);
     Reshape(bottom, top);
     SetLossWeights(top);
-
   }
 
   /**
@@ -111,7 +110,7 @@ class Layer {
     const vector<Blob<Dtype>*>&  top, 
     cudnnHandle_t*  handle, 
     cudaStream_t*  stream)
-    {} 
+      {} 
 
   /**
    * @brief Adjust the shapes of top blobs and internal buffers to accommodate
