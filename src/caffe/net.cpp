@@ -54,6 +54,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
 
+
   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
   {
     CUDA_CHECK(cudaStreamCreate(&stream_[g]));
@@ -61,6 +62,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
     //workspace[g] = NULL;
   }
+
 
   phase_ = in_param.state().phase();
   // Filter layers based on their include/exclude rules and
