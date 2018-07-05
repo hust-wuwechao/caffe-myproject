@@ -132,8 +132,9 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
   //  这里面是new 一个为什么不直接进行赋值呢？
 
 
-     /*   stream_  =   new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
-          handle_  =   new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];  
+     /*   
+           stream_   =    new cudaStream_t[this->group_ * CUDNN_STREAMS_PER_GROUP];
+           handle_   =    new cudnnHandle_t[this->group_ * CUDNN_STREAMS_PER_GROUP];  
      */ 
     
      stream_=stream;
@@ -149,9 +150,12 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
   // Initialize algorithm arrays
   //  初始化算法数组
 
+
   fwd_algo_       = new cudnnConvolutionFwdAlgo_t[bottom.size()];
   bwd_filter_algo_= new cudnnConvolutionBwdFilterAlgo_t[bottom.size()];
   bwd_data_algo_  = new cudnnConvolutionBwdDataAlgo_t[bottom.size()];
+
+
 
   // initialize size arrays
   // 
