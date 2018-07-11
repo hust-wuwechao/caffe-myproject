@@ -364,7 +364,7 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       mask = max_idx_.gpu_data();
     }
     // NOLINT_NEXT_LINE(whitespace/operators)
-    MaxPoolBackward<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream[0]>>>(
+    MaxPoolBackward<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
         count, top_diff, mask, top_mask, top[0]->num(), channels_,
         height_, width_, pooled_height_, pooled_width_,
         kernel_h_, kernel_w_, stride_h_, stride_w_, pad_h_, pad_w_,
@@ -372,14 +372,14 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     break;
   case PoolingParameter_PoolMethod_AVE:
     // NOLINT_NEXT_LINE(whitespace/operators)
-    AvePoolBackward<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream[0]>>>(
+    AvePoolBackward<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
         count, top_diff, top[0]->num(), channels_,
         height_, width_, pooled_height_, pooled_width_, kernel_h_,
         kernel_w_, stride_h_, stride_w_, pad_h_, pad_w_, bottom_diff);
     break;
   case PoolingParameter_PoolMethod_STOCHASTIC:
     // NOLINT_NEXT_LINE(whitespace/operators)
-    StoPoolBackward<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream[0]>>>(
+    StoPoolBackward<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
         count, rand_idx_.gpu_data(), top_diff,
         top[0]->num(), channels_, height_, width_, pooled_height_,
         pooled_width_, kernel_h_, kernel_w_, stride_h_, stride_w_,
