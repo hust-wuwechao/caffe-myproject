@@ -22,6 +22,13 @@ class InnerProductLayer : public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+  //  在这里面添加的
+  virtual  void   LayerSetUp1(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, 
+    cudnnHandle_t* handle , 
+    cudaStream_t*  stream);
+
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
@@ -45,6 +52,8 @@ class InnerProductLayer : public Layer<Dtype> {
   bool bias_term_;
   Blob<Dtype> bias_multiplier_;
   bool transpose_;  ///< if true, assume transposed weights
+  cudaStream_t*  stream_;
+
 };
 
 }  // namespace caffe

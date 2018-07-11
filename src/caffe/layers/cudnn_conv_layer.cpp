@@ -161,6 +161,8 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp1(
 
 
 
+
+
   // initialize size arrays
   // 
 
@@ -168,6 +170,8 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp1(
   workspace_fwd_sizes_ =        new size_t[bottom.size()];
   workspace_bwd_filter_sizes_ = new size_t[bottom.size()];
   workspace_bwd_data_sizes_ =   new size_t[bottom.size()];
+
+
 
   // workspace data
 

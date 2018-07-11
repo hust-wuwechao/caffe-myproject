@@ -13,7 +13,8 @@
 namespace caffe {
 
 template<typename Dtype>
-void Solver<Dtype>::SetActionFunction(ActionCallback func) {
+void Solver<Dtype>::SetActionFunction(ActionCallback func) 
+{
   action_request_function_ = func;
 }
 
@@ -75,7 +76,8 @@ void LoadNetWeights(shared_ptr<Net<Dtype> > net,
 }
 
 template <typename Dtype>
-void Solver<Dtype>::InitTrainNet() {
+void Solver<Dtype>::InitTrainNet() 
+{
   const int num_train_nets = param_.has_net() + param_.has_net_param() +
       param_.has_train_net() + param_.has_train_net_param();
   const string& field_names = "net, net_param, train_net, train_net_param";

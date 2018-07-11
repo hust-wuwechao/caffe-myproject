@@ -25,7 +25,8 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
       const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
-  virtual void LayerSetUp1(
+  virtual void LayerSetUp1
+  (
      const vector<Blob<Dtype>*>& bottom,
      const vector<Blob<Dtype>*>& top, 
      cudnnHandle_t*  handle, 
@@ -34,14 +35,19 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
 
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+      
   virtual ~CuDNNPoolingLayer();
+
   // Currently, cuDNN does not support the extra top blob.
   virtual inline int MinTopBlobs() const { return -1; }
+
   virtual inline int ExactNumTopBlobs() const { return 1; }
+
 
  protected:
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 

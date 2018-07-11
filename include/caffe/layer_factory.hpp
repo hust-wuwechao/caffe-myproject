@@ -98,7 +98,8 @@ class LayerRegistry {
   // static variables.
   LayerRegistry() {}
 
-  static string LayerTypeListString() {
+  static string LayerTypeListString() 
+  {
     vector<string> layer_types = LayerTypeList();
     string layer_types_str;
     for (vector<string>::iterator iter = layer_types.begin();

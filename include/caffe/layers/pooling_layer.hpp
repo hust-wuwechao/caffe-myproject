@@ -20,18 +20,27 @@ class PoolingLayer : public Layer<Dtype>
  public:
   explicit PoolingLayer(const LayerParameter& param)
       : Layer<Dtype>(param) {}
-
+   //   增加了这里面的
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
-
+  
+  ////   增加了这里面的
+  virtual  void   LayerSetUp1(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, 
+    cudnnHandle_t* handle , 
+    cudaStream_t*  stream);
 
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
 
   virtual inline const char* type() const { return "Pooling"; }
+
   virtual inline int ExactNumBottomBlobs() const { return 1; }
+
   virtual inline int MinTopBlobs() const { return 1; }
+
   // MAX POOL layers can output an extra top blob for the mask;
   // others can only output the pooled inputs.
   virtual inline int MaxTopBlobs() const {
@@ -58,6 +67,9 @@ class PoolingLayer : public Layer<Dtype>
   bool global_pooling_;
   Blob<Dtype> rand_idx_;
   Blob<int> max_idx_;
+  //  默认只有一个流
+  cudaStream_t*  stream_;
+
 };
 
 }  // namespace caffe
