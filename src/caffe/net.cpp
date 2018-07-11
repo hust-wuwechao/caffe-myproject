@@ -129,7 +129,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           << "either 0 or bottom_size times ";
     }
 
-    
+
     layers_.push_back(LayerRegistry<Dtype>::CreateLayer(layer_param));
 
     layer_names_.push_back(layer_param.name());
@@ -179,8 +179,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
     
       if(layers_[layer_id]->type()=="Convolution"
-         // layers_[layer_id]->type()=="ReLU"||
-         // layers_[layer_id]->type()=="Pooling"
+         layers_[layer_id]->type()=="ReLU"||
+         layers_[layer_id]->type()=="Pooling"||
+         layers_[layer_id]->type()=="InnerProduct"
          )
     {
          LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
