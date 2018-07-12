@@ -7,7 +7,7 @@
 
 namespace caffe {
 
-__global__ void sync_conv_groups() 
+__global__ void sync_pool_back() 
 {     }
 
 template <typename Dtype>
@@ -388,7 +388,7 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   default:
     LOG(FATAL) << "Unknown pooling method.";
   }
-  sync_conv_groups<<<1, 1>>>();
+  sync_pool_back<<<1, 1>>>();
   CUDA_POST_KERNEL_CHECK;
 }
 
