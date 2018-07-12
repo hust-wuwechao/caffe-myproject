@@ -107,9 +107,10 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
   for (int layer_id = 0; layer_id < param.layer_size(); ++layer_id) 
   {
+
     // Inherit phase from net if unset.
 
-
+    LOG(INFO)<<"layer_id"<<layer_id;
     if (!param.layer(layer_id).has_phase()) 
     {
 
@@ -706,9 +707,12 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
     for (int c = 0; c < before_backward_.size(); ++c) {
       before_backward_[c]->run(i);
     }
-    if (layer_need_backward_[i]) {
+    if (layer_need_backward_[i]) 
+    {
+      //if()
       layers_[i]->Backward(
           top_vecs_[i], bottom_need_backward_[i], bottom_vecs_[i]);
+
       if (debug_info_) { BackwardDebugInfo(i); }
     }
     for (int c = 0; c < after_backward_.size(); ++c) {
