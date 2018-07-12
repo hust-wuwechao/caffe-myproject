@@ -53,7 +53,7 @@ void InnerProductLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   }  // parameter initialization
   this->param_propagate_down_.resize(this->blobs_.size(), true);
 }
-
+template <typename Dtype>
 void InnerProductLayer<Dtype>::LayerSetUp1(
       const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
