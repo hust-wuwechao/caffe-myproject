@@ -178,7 +178,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
 
     
-      if(layers_[layer_id]->type()=="Convolution"
+      if(layers_[layer_id]->type()=="Convolution"||
          layers_[layer_id]->type()=="ReLU"||
          layers_[layer_id]->type()=="Pooling"||
          layers_[layer_id]->type()=="InnerProduct"
