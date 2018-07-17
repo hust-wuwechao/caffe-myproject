@@ -67,7 +67,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
  */
   int priority_low;
   int priority_hi;
-  checkCudaErrors(cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi));
+  CUDNN_CHECK(cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi));
 
   stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
@@ -77,11 +77,11 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   {
     if(g==0)
     { 
-      checkCudaErrors(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi));
+      CUDNN_CHECK(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi));
     }
     else
     {
-      checkCudaErrors(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low));
+     CUDNN_CHECK(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low));
     }
     //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
     CUDNN_CHECK(cudnnCreate(&handle_[g]));
