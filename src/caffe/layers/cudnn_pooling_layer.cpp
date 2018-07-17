@@ -28,7 +28,7 @@ void CuDNNPoolingLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
 {
     
   //stream_=stream;
-  handle_=handle;
+  handle_=handle[0];
   LOG(INFO)<<"进入CuDNNPoolingLayer<Dtype>::LayerSetUp1";
   PoolingLayer<Dtype>::LayerSetUp(bottom, top);
   CUDNN_CHECK(cudnnCreate(&handle_));
