@@ -136,6 +136,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     if (!param.layer(layer_id).has_phase()) 
     {
 
+      
       param.mutable_layer(layer_id)->set_phase(phase_);
 
 
