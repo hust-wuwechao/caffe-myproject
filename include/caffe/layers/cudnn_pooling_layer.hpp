@@ -53,7 +53,10 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
 
   bool handles_setup_;
   
-  cudnnHandle_t     handle_;
+  //cudnnHandle_t     handle_;
+
+  cudnnHandle_t* handle_;
+  cudaStream_t*  stream_;
   cudnnTensorDescriptor_t bottom_desc_, top_desc_;
   cudnnPoolingDescriptor_t  pooling_desc_;
   cudnnPoolingMode_t        mode_;
