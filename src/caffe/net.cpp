@@ -77,7 +77,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   {
     if(g==0)
     { 
-       cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_h));
+       cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
     }
     else
     {
