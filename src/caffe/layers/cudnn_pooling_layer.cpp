@@ -28,13 +28,13 @@ void CuDNNPoolingLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
 {
     
   //stream_=stream;
-  handle_=handle;
+  //handle_=handle;
 
   LOG(INFO)<<"进入CuDNNPoolingLayer<Dtype>::LayerSetUp1";
 
   PoolingLayer<Dtype>::LayerSetUp(bottom, top);
-  CUDNN_CHECK(cudnnCreate(&handle_));
-  handle_=handle[0];
+  //CUDNN_CHECK(cudnnCreate(&handle_[0]));
+  handle_=handle;
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
   cudnn::createPoolingDesc<Dtype>(
