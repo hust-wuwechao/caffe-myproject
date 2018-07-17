@@ -27,7 +27,7 @@ void DropoutLayer<Dtype>::LayerSetUp1(
       cudnnHandle_t* handle , 
       cudaStream_t*  stream) 
 {
-
+  stream_=stream;
   NeuronLayer<Dtype>::LayerSetUp(bottom, top);
   threshold_ = this->layer_param_.dropout_param().dropout_ratio();
   DCHECK(threshold_ > 0.);

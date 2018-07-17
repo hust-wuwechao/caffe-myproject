@@ -83,8 +83,9 @@ class DropoutLayer : public NeuronLayer<Dtype> {
    // 同样会加入了流
    // 需要注意的是是流的指针
    
+  // cudaStream_t*  stream_;
+  //cudnnHandle_t* handle_;
   cudaStream_t*  stream_;
-
 
   unsigned int uint_thres_;
 };
