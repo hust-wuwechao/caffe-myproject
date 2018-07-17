@@ -27,7 +27,7 @@ class Net
   explicit Net(const NetParameter& param);
   explicit Net(const string& param_file, Phase phase,
       const int level = 0, const vector<string>* stages = NULL);
-  virtual ~Net() {}
+  virtual ~Net();
 
   /// @brief Initialize a network with a NetParameter.
   void Init(const NetParameter& param);
@@ -248,11 +248,13 @@ class Net
     friend class Net;
   };
   const vector<Callback*>& before_forward() const { return before_forward_; }
-  void add_before_forward(Callback* value) {
+  void add_before_forward(Callback* value) 
+  {
     before_forward_.push_back(value);
   }
   const vector<Callback*>& after_forward() const { return after_forward_; }
-  void add_after_forward(Callback* value) {
+  void add_after_forward(Callback* value) 
+  {
     after_forward_.push_back(value);
   }
   const vector<Callback*>& before_backward() const { return before_backward_; }
