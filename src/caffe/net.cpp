@@ -77,11 +77,11 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   {
     if(g==0)
     { 
-      CUDNN_CHECK(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi));
+       cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_h));
     }
     else
     {
-     CUDNN_CHECK(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low));
+      cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
     }
     //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
     CUDNN_CHECK(cudnnCreate(&handle_[g]));
