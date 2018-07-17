@@ -16,14 +16,14 @@ void CuDNNReLULayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   const Dtype* bottom_data = bottom[0]->gpu_data();
   Dtype* top_data = top[0]->mutable_gpu_data();
 #if CUDNN_VERSION_MIN(5, 0, 0)
-  CUDNN_CHECK(cudnnActivationForward(this->handle_,
+  CUDNN_CHECK(cudnnActivationForward(this->handle_[0],
         activ_desc_,
         cudnn::dataType<Dtype>::one,
         this->bottom_desc_, bottom_data,
         cudnn::dataType<Dtype>::zero,
         this->top_desc_, top_data));
 #else
-  CUDNN_CHECK(cudnnActivationForward_v4(this->handle_,
+  CUDNN_CHECK(cudnnActivationForward_v4(this->handle_[0],
         activ_desc_,
         cudnn::dataType<Dtype>::one,
         this->bottom_desc_, bottom_data,
@@ -41,7 +41,8 @@ void CuDNNReLULayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   }
 
   // Fallback to standard Caffe for leaky ReLU.
-  if (ReLULayer<Dtype>::layer_param_.relu_param().negative_slope() != 0) {
+  if (ReLULayer<Dtype>::layer_param_.relu_param().negative_slope() != 0) 
+  {
     return ReLULayer<Dtype>::Backward_gpu(top, propagate_down, bottom);
   }
 
@@ -51,7 +52,7 @@ void CuDNNReLULayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
 #if CUDNN_VERSION_MIN(5, 0, 0)
   CUDNN_CHECK(cudnnActivationBackward(
-        this->handle_,
+        this->handle_[0],
         activ_desc_,
         cudnn::dataType<Dtype>::one,
         this->top_desc_, top_data, this->top_desc_, top_diff,
@@ -60,7 +61,7 @@ void CuDNNReLULayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         this->bottom_desc_, bottom_diff));
 #else
   CUDNN_CHECK(cudnnActivationBackward_v4(
-        this->handle_,
+        this->handle_[0],
         activ_desc_,
         cudnn::dataType<Dtype>::one,
         this->top_desc_, top_data, this->top_desc_, top_diff,
