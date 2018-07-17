@@ -67,7 +67,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
  */
   int priority_low;
   int priority_hi;
-  CUDNN_CHECK(cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi));
+  cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi);
 
   stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
