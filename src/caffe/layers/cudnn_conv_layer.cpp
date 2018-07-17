@@ -209,8 +209,8 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp1(
    {
      //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
      //CUDNN_CHECK(cudnnCreate(&handle_[g]));
-     //CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
-     workspace[g] = NULL;
+      //CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
+      workspace[g] = NULL;
    }
 
 

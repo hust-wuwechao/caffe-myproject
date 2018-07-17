@@ -710,8 +710,17 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
     if (layer_need_backward_[i]) 
     {
       //if()
-      layers_[i]->Backward(
+      if(i===1)
+      {
+        layers_[i]->Backward(
           top_vecs_[i], bottom_need_backward_[i], bottom_vecs_[i]);
+        //  这里面应该加入流同步的内容
+        //  是的进行下一次计算时候。
+        //  
+      }
+      else
+         layers_[i]->Backward(
+             top_vecs_[i], bottom_need_backward_[i], bottom_vecs_[i]);
 
       if (debug_info_) { BackwardDebugInfo(i); }
     }
@@ -1116,6 +1125,27 @@ const shared_ptr<Layer<Dtype> > Net<Dtype>::layer_by_name(
   return layer_ptr;
 }
 
+
+
+template <typename Dtype>
+ Net<Dtype>::~Net()
+{
+
+  for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+  {
+
+       cudaStreamDestroy(stream_[g]);
+       cudnnDestroy(handle_[g]);
+    
+    //workspace[g] = NULL;
+  }
+  delete [] stream_;
+  delete [] handle_;
+    
+}
 INSTANTIATE_CLASS(Net);
+
+
+
 
 }  // namespace caffe

@@ -11,6 +11,7 @@ void CuDNNReLULayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
  {
   ReLULayer<Dtype>::LayerSetUp(bottom, top);
   // initialize cuDNN
+
   CUDNN_CHECK(cudnnCreate(&handle_));
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
@@ -27,13 +28,11 @@ void CuDNNReLULayer<Dtype>::LayerSetUp1(
     cudaStream_t*  stream) 
  {
 
-  LOG(INFO)<<"进入CuDNNReLULayer<Dtype>::LayerSetUp1";
+  //LOG(INFO)<<"进入CuDNNReLULayer<Dtype>::LayerSetUp1";
   ReLULayer<Dtype>::LayerSetUp(bottom, top);
   // initialize cuDNN
   handle_=handle[0];
-
   //CUDNN_CHECK(cudnnCreate(&handle_));
-
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
   cudnn::createActivationDescriptor<Dtype>(&activ_desc_, CUDNN_ACTIVATION_RELU);

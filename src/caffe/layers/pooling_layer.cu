@@ -358,9 +358,11 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   const Dtype* top_mask = NULL;
   switch (this->layer_param_.pooling_param().pool()) {
   case PoolingParameter_PoolMethod_MAX:
-    if (use_top_mask) {
+    if (use_top_mask) 
+    {
       top_mask = top[1]->gpu_data();
-    } else {
+    } else 
+    {
       mask = max_idx_.gpu_data();
     }
     // NOLINT_NEXT_LINE(whitespace/operators)

@@ -35,6 +35,14 @@ class DropoutLayer : public NeuronLayer<Dtype> {
       : NeuronLayer<Dtype>(param) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+       cudnnHandle_t* handle , 
+      cudaStream_t*  stream );
+
+
+    
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
@@ -72,6 +80,12 @@ class DropoutLayer : public NeuronLayer<Dtype> {
   Dtype threshold_;
   /// the scale for undropped inputs at train time @f$ 1 / (1 - p) @f$
   Dtype scale_;
+   // 同样会加入了流
+   // 需要注意的是是流的指针
+   
+  cudaStream_t*  stream_;
+
+
   unsigned int uint_thres_;
 };
 

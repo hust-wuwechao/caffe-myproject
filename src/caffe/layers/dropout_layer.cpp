@@ -18,6 +18,32 @@ void DropoutLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   uint_thres_ = static_cast<unsigned int>(UINT_MAX * threshold_);
 }
 
+
+
+template <typename Dtype>
+void DropoutLayer<Dtype>::LayerSetUp1(
+      const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t* handle , 
+      cudaStream_t*  stream) 
+{
+
+  NeuronLayer<Dtype>::LayerSetUp(bottom, top);
+  threshold_ = this->layer_param_.dropout_param().dropout_ratio();
+  DCHECK(threshold_ > 0.);
+  DCHECK(threshold_ < 1.);
+  scale_ = 1. / (1. - threshold_);
+  uint_thres_ = static_cast<unsigned int>(UINT_MAX * threshold_);
+}
+
+
+
+
+
+
+
+
+
 template <typename Dtype>
 void DropoutLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
