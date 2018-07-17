@@ -53,7 +53,21 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
 
   // 初始化流参数。
+   /* int priority_low;
+    int priority_hi;
+    checkCudaErrors(cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi));
 
+    printf("CUDA stream priority range: LOW: %d to HIGH: %d\n",priority_low,priority_hi);
+
+    // create streams with highest and lowest available priorities
+    cudaStream_t st_low;
+    cudaStream_t st_hi;
+    checkCudaErrors(cudaStreamCreateWithPriority(&st_low, cudaStreamNonBlocking, priority_low));
+    checkCudaErrors(cudaStreamCreateWithPriority(&st_hi,  cudaStreamNonBlocking, priority_hi));
+ */
+  int priority_low;
+  int priority_hi;
+  checkCudaErrors(cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi));
 
   stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
@@ -61,7 +75,15 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
   {
-    CUDA_CHECK(cudaStreamCreate(&stream_[g]));
+    if(g==0)
+    { 
+      checkCudaErrors(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi));
+    }
+    else
+    {
+      checkCudaErrors(cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low));
+    }
+    //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
     CUDNN_CHECK(cudnnCreate(&handle_[g]));
     CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
     //workspace[g] = NULL;
