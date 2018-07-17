@@ -711,7 +711,7 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
     if (layer_need_backward_[i]) 
     {
       //if()
-      if(i===1)
+      if(i==1)
       {
         layers_[i]->Backward(
           top_vecs_[i], bottom_need_backward_[i], bottom_vecs_[i]);
