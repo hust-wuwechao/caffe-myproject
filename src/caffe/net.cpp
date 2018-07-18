@@ -206,8 +206,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
          layers_[layer_id]->type()=="ReLU"||
          layers_[layer_id]->type()=="Pooling"||
          layers_[layer_id]->type()=="InnerProduct"||
-         layers_[layer_id]->type()=="Dropout"
-         )
+         layers_[layer_id]->type()=="Dropout"||
+         layers_[layer_id]->type()=="SoftmaxWithLoss"
+    )
     {
          //LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
          LOG_IF(INFO, Caffe::root_solver())
