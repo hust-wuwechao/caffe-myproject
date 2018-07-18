@@ -397,7 +397,7 @@ void caffe_gpu_mul<double>(const int N, const double* a,
 
 template <>
 void caffe_gpu_mul1<float>(const int N, const float* a,
-    const float* b, float* y,cudaStream_t,&stream) 
+    const float* b, float* y,cudaStream_t &stream) 
 {
   // NOLINT_NEXT_LINE(whitespace/operators)
   mul_kernel<float><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0,stream>>>(
