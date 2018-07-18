@@ -133,8 +133,8 @@ class SoftmaxWithLossLayer : public LossLayer<Dtype> {
 
   int softmax_axis_, outer_num_, inner_num_;
    //  增加流的支持
-  cudnnHandle_t*  handle_; 
-  cudaStream_t*   stream_;
+   cublasHandle_t*   handle_; 
+   cudaStream_t*     stream_;
 };
 
 }  // namespace caffe

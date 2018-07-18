@@ -56,7 +56,7 @@ void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
   
   Dtype loss;
   //
-  caffe_gpu_asum1(nthreads, loss_data, &loss, handle_[0]);
+  caffe_gpu_asum1(nthreads, loss_data, &loss,handle_[0]);
   Dtype valid_count = -1;
 
   // Only launch another CUDA kernel if we actually need the count of valid
