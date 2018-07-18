@@ -9,7 +9,7 @@ namespace caffe {
 
 
 
-__global__ void sync_conv_groups() 
+__global__ void sync_conv_groups_softmax_with_loss() 
 {     }
 
 template <typename Dtype>
@@ -77,7 +77,7 @@ void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
   
   caffe_gpu_set1(bottom[0]->count(), Dtype(0), bottom[0]->mutable_gpu_diff(),stream_[0]);
   //  这里面应该需要进行流的同步问题。
-  sync_conv_groups<<<1, 1>>>();
+  sync_conv_groups_softmax_with_loss<<<1, 1>>>();
 
 }
 
