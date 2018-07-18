@@ -86,20 +86,37 @@ void CuDNNConvolutionLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     for (int g = 0; g < this->group_; g++)
     {
       // Gradient w.r.t. bias.
+      //  zai  0 流里面
       if (this->bias_term_ && this->param_propagate_down_[1]) 
       {
-        CUDNN_CHECK(cudnnConvolutionBackwardBias(handle_[0*this->group_ + g],
+        /* CUDNN_CHECK(cudnnConvolutionBackwardBias(handle_[0*this->group_ + g],
+              cudnn::dataType<Dtype>::one,
+              top_descs_[i],  top_diff + top_offset_ * g,
+              cudnn::dataType<Dtype>::one,
+              bias_desc_, bias_diff + bias_offset_ * g)); */
+              CUDNN_CHECK(cudnnConvolutionBackwardBias(handle_[2*this->group_ + g],
               cudnn::dataType<Dtype>::one,
               top_descs_[i],  top_diff + top_offset_ * g,
               cudnn::dataType<Dtype>::one,
               bias_desc_, bias_diff + bias_offset_ * g));
       }
 
+      //  在1 里面
       // Gradient w.r.t. weights.
       if (this->param_propagate_down_[0]) 
       {
         const Dtype* bottom_data = bottom[i]->gpu_data();
-        CUDNN_CHECK(cudnnConvolutionBackwardFilter(
+        /* CUDNN_CHECK(cudnnConvolutionBackwardFilter(
+              handle_[1*this->group_ + g],
+              cudnn::dataType<Dtype>::one,
+              bottom_descs_[i], bottom_data + bottom_offset_ * g,
+              top_descs_[i],    top_diff + top_offset_ * g,
+              conv_descs_[i],
+              bwd_filter_algo_[i], workspace[1*this->group_ + g],
+              workspace_bwd_filter_sizes_[i],
+              cudnn::dataType<Dtype>::one,
+              filter_desc_, weight_diff + this->weight_offset_ * g)); */
+              CUDNN_CHECK(cudnnConvolutionBackwardFilter(
               handle_[1*this->group_ + g],
               cudnn::dataType<Dtype>::one,
               bottom_descs_[i], bottom_data + bottom_offset_ * g,
@@ -112,6 +129,7 @@ void CuDNNConvolutionLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       }
 
       // Gradient w.r.t. bottom data.
+      // 在2流里面
       if (propagate_down[i]) 
       {
         if (weight == NULL) 
@@ -119,8 +137,21 @@ void CuDNNConvolutionLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           weight = this->blobs_[0]->gpu_data();
         }
         Dtype* bottom_diff = bottom[i]->mutable_gpu_diff();
-        CUDNN_CHECK(cudnnConvolutionBackwardData(
+        /* CUDNN_CHECK(cudnnConvolutionBackwardData(
               handle_[2*this->group_ + g],
+              cudnn::dataType<Dtype>::one,
+              filter_desc_, weight + this->weight_offset_ * g,
+              top_descs_[i], top_diff + top_offset_ * g,
+              conv_descs_[i],
+              bwd_data_algo_[i], workspace[2*this->group_ + g],
+              workspace_bwd_data_sizes_[i],
+              cudnn::dataType<Dtype>::zero,
+              bottom_descs_[i],
+              bottom_diff + bottom_offset_ * g
+              )
+              ); */
+          CUDNN_CHECK(cudnnConvolutionBackwardData(
+              handle_[0*this->group_ + g],
               cudnn::dataType<Dtype>::one,
               filter_desc_, weight + this->weight_offset_ * g,
               top_descs_[i], top_diff + top_offset_ * g,
