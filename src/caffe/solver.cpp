@@ -232,6 +232,9 @@ void Solver<Dtype>::Step(int iters) {
     for (int i = 0; i < param_.iter_size(); ++i) 
     {
       loss += net_->ForwardBackward();
+      //  在这里面加入同步的设置。
+      
+      cudaDeviceSynchronize();
     }
     loss /= param_.iter_size();
     // average the loss across iterations for smoothed reporting
