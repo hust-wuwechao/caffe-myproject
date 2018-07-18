@@ -42,7 +42,7 @@ void caffe_gpu_gemm<double>(const CBLAS_TRANSPOSE TransA,
       N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));
 }
 
-template <>
+
 void caffe_gpu_gemm1<double>(const CBLAS_TRANSPOSE TransA,
     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
     const double alpha, const double* A, const double* B, const double beta,
@@ -81,7 +81,6 @@ void caffe_gpu_gemv<float>(const CBLAS_TRANSPOSE TransA, const int M,
 
 
 
-template <>
 void caffe_gpu_gemv1<double>(const CBLAS_TRANSPOSE TransA, const int M,
     const int N, const double alpha, const double* A, const double* x,
     const double beta, double* y,
