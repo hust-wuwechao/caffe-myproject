@@ -644,8 +644,8 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
 template <typename Dtype>
 Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
 
-  LOG_IF(INFO, Caffe::root_solver())
-        << "Dtype Net<Dtype>::ForwardFromTo(int start, int end) ";
+  /* LOG_IF(INFO, Caffe::root_solver())
+        << "Dtype Net<Dtype>::ForwardFromTo(int start, int end) "; */
   CHECK_GE(start, 0);
   CHECK_LT(end, layers_.size());
   Dtype loss = 0;
