@@ -218,17 +218,19 @@ void caffe_gpu_dot<double>(const int n, const double* x, const double* y,
 }
 
 template <>
-void caffe_gpu_asum<float>(const int n, const float* x, float* y) {
+void caffe_gpu_asum<float>(const int n, const float* x, float* y) 
+{
   CUBLAS_CHECK(cublasSasum(Caffe::cublas_handle(), n, x, 1, y));
 }
 
 template <>
-void caffe_gpu_asum<double>(const int n, const double* x, double* y) {
+void caffe_gpu_asum<double>(const int n, const double* x, double* y) 
+{
   CUBLAS_CHECK(cublasDasum(Caffe::cublas_handle(), n, x, 1, y));
 }
 
 template <>
-void caffe_gpu_asum1<float>(const int n, const float* x, float* y,cublasHandle_t &handle) 
+void caffe_gpu_asum1<float>(const int n, const float* x, float* y, cublasHandle_t &handle) 
 {
   CUBLAS_CHECK(cublasSasum(handle, n, x, 1, y));
 }

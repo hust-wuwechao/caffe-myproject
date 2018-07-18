@@ -48,24 +48,28 @@ void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
   // Similarly, this memory is never used elsewhere, and thus we can use it
   // to avoid having to allocate additional GPU memory.
   Dtype* counts = prob_.mutable_gpu_diff();
+
   // NOLINT_NEXT_LINE(whitespace/operators)
   SoftmaxLossForwardGPU<Dtype><<<CAFFE_GET_BLOCKS(nthreads),
       CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(nthreads, prob_data, label, loss_data,
       outer_num_, dim, inner_num_, has_ignore_label_, ignore_label_, counts);
+  
   Dtype loss;
   //
-  caffe_gpu_asum1(nthreads, loss_data, &loss,handle_[0]);
+  caffe_gpu_asum1(nthreads, loss_data, &loss, handle_[0]);
   Dtype valid_count = -1;
+
   // Only launch another CUDA kernel if we actually need the count of valid
   // outputs.
-  if (normalization_ == LossParameter_NormalizationMode_VALID &&
-      has_ignore_label_) 
+  if (normalization_ == LossParameter_NormalizationMode_VALID &&has_ignore_label_) 
   {
     caffe_gpu_asum1(nthreads, counts, &valid_count,handle_[0]);
   }
+
   top[0]->mutable_cpu_data()[0] = loss / get_normalizer(normalization_,
                                                         valid_count);
-  if (top.size() == 2) {
+  if (top.size() == 2) 
+  {
     top[1]->ShareData(prob_);
   }
 
