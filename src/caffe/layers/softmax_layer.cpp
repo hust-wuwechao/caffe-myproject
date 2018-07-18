@@ -7,6 +7,31 @@
 namespace caffe {
 
 template <typename Dtype>
+void SoftmaxLayer<Dtype>::LayerSetUp(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, 
+    cudnnHandle_t* handle , 
+    cudaStream_t*  stream)
+    {
+      //PoolingLayer<Dtype>::LayerSetUp(bottom, top);
+       SoftmaxLayer<Dtype>::LayerSetUp(bottom, top);
+    }
+
+template <typename Dtype>
+void SoftmaxLayer<Dtype>::LayerSetUp1(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, 
+    cudnnHandle_t* handle , 
+    cudaStream_t*  stream)
+    {
+         SoftmaxLayer<Dtype>::LayerSetUp(bottom, top);
+         stream_=stream;
+
+    }
+
+
+
+template <typename Dtype>
 void SoftmaxLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   softmax_axis_ =

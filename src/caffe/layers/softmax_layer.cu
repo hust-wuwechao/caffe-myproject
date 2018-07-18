@@ -95,27 +95,32 @@ void SoftmaxLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   // and then normalize.
   // compute max
   // NOLINT_NEXT_LINE(whitespace/operators)
+  //  求取通道最大值
   kernel_channel_max<Dtype><<<CAFFE_GET_BLOCKS(outer_num_ * inner_num_),
       CAFFE_CUDA_NUM_THREADS>>>(outer_num_, channels, inner_num_, top_data,
       scale_data);
   // subtract
   // NOLINT_NEXT_LINE(whitespace/operators)
+  // 减去最大值
   kernel_channel_subtract<Dtype><<<CAFFE_GET_BLOCKS(count),
-      CAFFE_CUDA_NUM_THREADS>>>(count, outer_num_, channels, inner_num_,
+      CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(count, outer_num_, channels, inner_num_,
       scale_data, top_data);
   // exponentiate
   // NOLINT_NEXT_LINE(whitespace/operators)
-  kernel_exp<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS>>>(
+  // 每一个值求取指数
+  kernel_exp<Dtype><<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
       count, top_data, top_data);
   // sum after exp
   // NOLINT_NEXT_LINE(whitespace/operators)
+  //  指数求和
   kernel_channel_sum<Dtype><<<CAFFE_GET_BLOCKS(outer_num_ * inner_num_),
-      CAFFE_CUDA_NUM_THREADS>>>(outer_num_, channels, inner_num_, top_data,
+      CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(outer_num_, channels, inner_num_, top_data,
       scale_data);
   // divide
+  //  除以最大值
   // NOLINT_NEXT_LINE(whitespace/operators)
   kernel_channel_div<Dtype><<<CAFFE_GET_BLOCKS(count),
-      CAFFE_CUDA_NUM_THREADS>>>(count, outer_num_, channels, inner_num_,
+      CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(count, outer_num_, channels, inner_num_,
       scale_data, top_data);
 }
 
@@ -131,15 +136,18 @@ void SoftmaxLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   caffe_copy(count, top_diff, bottom_diff);
   // Compute inner1d(top_diff, top_data) and subtract them from the bottom diff.
   // NOLINT_NEXT_LINE(whitespace/operators)
+  // 通道求和吗？
   kernel_channel_dot<Dtype><<<CAFFE_GET_BLOCKS(outer_num_ * inner_num_),
-      CAFFE_CUDA_NUM_THREADS>>>(outer_num_, channels, inner_num_,
+      CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(outer_num_, channels, inner_num_,
       top_diff, top_data, scale_data);
   // NOLINT_NEXT_LINE(whitespace/operators)
+
   kernel_channel_subtract<Dtype><<<CAFFE_GET_BLOCKS(count),
-      CAFFE_CUDA_NUM_THREADS>>>(count, outer_num_, channels, inner_num_,
+      CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(count, outer_num_, channels, inner_num_,
       scale_data, bottom_diff);
   // elementwise multiplication
-  caffe_gpu_mul<Dtype>(top[0]->count(), bottom_diff, top_data, bottom_diff);
+
+  caffe_gpu_mul1<Dtype>(top[0]->count(), bottom_diff, top_data, bottom_diff,stream_[0]);
 }
 
 INSTANTIATE_LAYER_GPU_FUNCS(SoftmaxLayer);

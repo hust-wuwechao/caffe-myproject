@@ -160,6 +160,18 @@ void caffe_gpu_scal<double>(const int N, const double alpha, double *X) {
 }
 
 template <>
+void caffe_gpu_scal1<float>(const int N, const float alpha, float *X, cublasHandle_t &handle) {
+  CUBLAS_CHECK(cublasSscal(handle, N, &alpha, X, 1));
+}
+
+template <>
+void caffe_gpu_scal1<double>(const int N, const double alpha, double *X,cublasHandle_t &handle) {
+  CUBLAS_CHECK(cublasDscal(handle, N, &alpha, X, 1));
+}
+
+
+
+template <>
 void caffe_gpu_scal<float>(const int N, const float alpha, float* X,
                            cudaStream_t str) {
   cudaStream_t initial_stream;
@@ -216,6 +228,20 @@ void caffe_gpu_asum<double>(const int n, const double* x, double* y) {
 }
 
 template <>
+void caffe_gpu_asum1<float>(const int n, const float* x, float* y,cublasHandle_t &handle) 
+{
+  CUBLAS_CHECK(cublasSasum(handle, n, x, 1, y));
+}
+
+template <>
+void caffe_gpu_asum1<double>(const int n, const double* x, double* y,cublasHandle_t &handle) 
+{
+  CUBLAS_CHECK(cublasDasum(handle, n, x, 1, y));
+}
+
+
+
+template <>
 void caffe_gpu_scale<float>(const int n, const float alpha, const float *x,
                             float* y) {
   CUBLAS_CHECK(cublasScopy(Caffe::cublas_handle(), n, x, 1, y, 1));
@@ -229,6 +255,9 @@ void caffe_gpu_scale<double>(const int n, const double alpha, const double *x,
   CUBLAS_CHECK(cublasDscal(Caffe::cublas_handle(), n, &alpha, y, 1));
 }
 
+
+
+
 template <typename Dtype>
 __global__ void set_kernel(const int n, const Dtype alpha, Dtype* y) {
   CUDA_KERNEL_LOOP(index, n) {
@@ -237,19 +266,38 @@ __global__ void set_kernel(const int n, const Dtype alpha, Dtype* y) {
 }
 
 template <typename Dtype>
-void caffe_gpu_set(const int N, const Dtype alpha, Dtype* Y) {
+void caffe_gpu_set(const int N, const Dtype alpha, Dtype* Y, cudaStream_t &stream) {
   if (alpha == 0) {
     CUDA_CHECK(cudaMemset(Y, 0, sizeof(Dtype) * N));  // NOLINT(caffe/alt_fn)
     return;
   }
   // NOLINT_NEXT_LINE(whitespace/operators)
-  set_kernel<Dtype><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
+  set_kernel<Dtype><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0 ,stream>>>(
       N, alpha, Y);
 }
 
 template void caffe_gpu_set<int>(const int N, const int alpha, int* Y);
 template void caffe_gpu_set<float>(const int N, const float alpha, float* Y);
 template void caffe_gpu_set<double>(const int N, const double alpha, double* Y);
+
+
+
+template <typename Dtype>
+void caffe_gpu_set1(const int N, const Dtype alpha, Dtype* Y, cudaStream_t &stream) {
+  if (alpha == 0) {
+    CUDA_CHECK(cudaMemset(Y, 0, sizeof(Dtype) * N));  // NOLINT(caffe/alt_fn)
+    return;
+  }
+  // NOLINT_NEXT_LINE(whitespace/operators)
+  set_kernel<Dtype><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0 ,stream>>>(
+      N, alpha, Y);
+}
+
+template void caffe_gpu_set1<int>(const int N, const int alpha, int* Y,cudaStream_t &stream);
+template void caffe_gpu_set1<float>(const int N, const float alpha, float* Y,cudaStream_t &stream);
+template void caffe_gpu_set1<double>(const int N, const double alpha, double* Y,cudaStream_t &stream);
+
+
 
 template <typename Dtype>
 __global__ void add_scalar_kernel(const int n, const Dtype alpha, Dtype* y) {
@@ -330,7 +378,8 @@ __global__ void mul_kernel(const int n, const Dtype* a,
 
 template <>
 void caffe_gpu_mul<float>(const int N, const float* a,
-    const float* b, float* y) {
+    const float* b, float* y) 
+{
   // NOLINT_NEXT_LINE(whitespace/operators)
   mul_kernel<float><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
       N, a, b, y);
@@ -343,6 +392,32 @@ void caffe_gpu_mul<double>(const int N, const double* a,
   mul_kernel<double><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
       N, a, b, y);
 }
+
+template <>
+void caffe_gpu_mul1<float>(const int N, const float* a,
+    const float* b, float* y,cudaStream_t,&stream) 
+{
+  // NOLINT_NEXT_LINE(whitespace/operators)
+  mul_kernel<float><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0,stream>>>(
+      N, a, b, y);
+}
+
+template <>
+void caffe_gpu_mul1<double>(const int N, const double* a,
+    const double* b, double* y,cudaStream_t &stream) 
+{
+  // NOLINT_NEXT_LINE(whitespace/operators)
+  mul_kernel<double><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0,stream>>>(
+      N, a, b, y);
+}
+
+
+
+
+
+
+
+
 
 template <typename Dtype>
 __global__ void div_kernel(const int n, const Dtype* a,

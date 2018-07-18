@@ -11,6 +11,7 @@ template <typename Dtype>
 void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   LossLayer<Dtype>::LayerSetUp(bottom, top);
+
   LayerParameter softmax_param(this->layer_param_);
   softmax_param.set_type("Softmax");
   softmax_layer_ = LayerRegistry<Dtype>::CreateLayer(softmax_param);
@@ -34,6 +35,53 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
     normalization_ = this->layer_param_.loss_param().normalization();
   }
 }
+
+
+template <typename Dtype>
+void SoftmaxWithLossLayer<Dtype>::LayerSetUp1(
+    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top,
+    cudnnHandle_t* handle, 
+    cudaStream_t*  stream) 
+  {
+ 
+  LossLayer<Dtype>::LayerSetUp(bottom, top);
+  stream_=stream;
+  handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  for(int i=0;i<3;i++)
+  {
+    cublasCreate(&handle_[i]);
+    cublasSetStream(handle_[i],  stream_[i]);
+  } 
+  /* stream_=stream;
+  handle_=handle; */
+  LayerParameter softmax_param(this->layer_param_);
+  softmax_param.set_type("Softmax");
+  softmax_layer_ = LayerRegistry<Dtype>::CreateLayer(softmax_param);
+  softmax_bottom_vec_.clear();
+  softmax_bottom_vec_.push_back(bottom[0]);
+  softmax_top_vec_.clear();
+  softmax_top_vec_.push_back(&prob_);
+  softmax_layer_->SetUp1(softmax_bottom_vec_, softmax_top_vec_,handle,stream);
+  has_ignore_label_ =
+    this->layer_param_.loss_param().has_ignore_label();
+  if (has_ignore_label_)
+ {
+    ignore_label_ = this->layer_param_.loss_param().ignore_label();
+  }
+  if (!this->layer_param_.loss_param().has_normalization() &&
+      this->layer_param_.loss_param().has_normalize()) {
+    normalization_ = this->layer_param_.loss_param().normalize() ?
+                     LossParameter_NormalizationMode_VALID :
+                     LossParameter_NormalizationMode_BATCH_SIZE;
+  } 
+  else 
+  {
+    normalization_ = this->layer_param_.loss_param().normalization();
+  }
+}
+
+
+
 
 template <typename Dtype>
 void SoftmaxWithLossLayer<Dtype>::Reshape(
@@ -90,52 +138,82 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   // The forward pass computes the softmax prob values.
   softmax_layer_->Forward(softmax_bottom_vec_, softmax_top_vec_);
+  //  
   const Dtype* prob_data = prob_.cpu_data();
+
   const Dtype* label = bottom[1]->cpu_data();
+
   int dim = prob_.count() / outer_num_;
   int count = 0;
   Dtype loss = 0;
-  for (int i = 0; i < outer_num_; ++i) {
-    for (int j = 0; j < inner_num_; j++) {
+  //  首先认为所有的损失都是0
+  //  batch 大小
+  for (int i = 0; i < outer_num_; ++i) 
+  {
+    //  =1
+    for (int j = 0; j < inner_num_; j++) 
+    {
+      //  
       const int label_value = static_cast<int>(label[i * inner_num_ + j]);
-      if (has_ignore_label_ && label_value == ignore_label_) {
+      if (has_ignore_label_ && label_value == ignore_label_) 
+      {
         continue;
       }
       DCHECK_GE(label_value, 0);
       DCHECK_LT(label_value, prob_.shape(softmax_axis_));
+      //  损失等于+
+      //  样本原本的标签的值对应的概率的然后选择取 log ()
       loss -= log(std::max(prob_data[i * dim + label_value * inner_num_ + j],
                            Dtype(FLT_MIN)));
       ++count;
     }
   }
+   //  没有被呼略有效样本的个数。
   top[0]->mutable_cpu_data()[0] = loss / get_normalizer(normalization_, count);
-  if (top.size() == 2) {
+
+  if (top.size() == 2) 
+  {
     top[1]->ShareData(prob_);
   }
 }
 
 template <typename Dtype>
 void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
-    const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-  if (propagate_down[1]) {
+    const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) 
+{
+  if (propagate_down[1])
+  {
     LOG(FATAL) << this->type()
                << " Layer cannot backpropagate to label inputs.";
   }
-  if (propagate_down[0]) {
+  if (propagate_down[0]) 
+  {
     Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();
     const Dtype* prob_data = prob_.cpu_data();
+    //  首先，bottom  diff的值就是softmax  的输出值。
+
     caffe_copy(prob_.count(), prob_data, bottom_diff);
     const Dtype* label = bottom[1]->cpu_data();
     int dim = prob_.count() / outer_num_;
     int count = 0;
-    for (int i = 0; i < outer_num_; ++i) {
-      for (int j = 0; j < inner_num_; ++j) {
+    for (int i = 0; i < outer_num_; ++i)
+     {
+      for (int j = 0; j < inner_num_; ++j) 
+      {
         const int label_value = static_cast<int>(label[i * inner_num_ + j]);
-        if (has_ignore_label_ && label_value == ignore_label_) {
-          for (int c = 0; c < bottom[0]->shape(softmax_axis_); ++c) {
+        //  对应的标签被忽略
+        if (has_ignore_label_ && label_value == ignore_label_)
+        {
+          for (int c = 0; c < bottom[0]->shape(softmax_axis_); ++c)
+          {
+            //  他的梯度都设置0
             bottom_diff[i * dim + c * inner_num_ + j] = 0;
           }
-        } else {
+        }
+        else 
+        {
+          //  对应的标签位置的梯度的值会减一
+          //  其他位置的梯度为保持不变。
           bottom_diff[i * dim + label_value * inner_num_ + j] -= 1;
           ++count;
         }

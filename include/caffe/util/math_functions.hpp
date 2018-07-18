@@ -192,6 +192,12 @@ void caffe_gpu_memcpy(const size_t N, const void *X, void *Y);
 template <typename Dtype>
 void caffe_gpu_set(const int N, const Dtype alpha, Dtype *X);
 
+template <typename Dtype>
+void caffe_gpu_set1(const int N, const Dtype alpha, Dtype *X,cudaStream_t &stream);
+
+
+
+
 inline void caffe_gpu_memset(const size_t N, const int alpha, void* X) {
 #ifndef CPU_ONLY
   CUDA_CHECK(cudaMemset(X, alpha, N));  // NOLINT(caffe/alt_fn)
@@ -206,6 +212,11 @@ void caffe_gpu_add_scalar(const int N, const Dtype alpha, Dtype *X);
 template <typename Dtype>
 void caffe_gpu_scal(const int N, const Dtype alpha, Dtype *X);
 
+template <typename Dtype>
+void caffe_gpu_scal(const int N, const Dtype alpha, Dtype *X,cublasHandle_t &handl);
+
+
+
 #ifndef CPU_ONLY
 template <typename Dtype>
 void caffe_gpu_scal(const int N, const Dtype alpha, Dtype* X, cudaStream_t str);
@@ -219,6 +230,12 @@ void caffe_gpu_sub(const int N, const Dtype* a, const Dtype* b, Dtype* y);
 
 template <typename Dtype>
 void caffe_gpu_mul(const int N, const Dtype* a, const Dtype* b, Dtype* y);
+
+template <typename Dtype>
+void caffe_gpu_mul1(const int N, const Dtype* a, const Dtype* b, Dtype* y,cudaStream_t,&stream);
+
+
+
 
 template <typename Dtype>
 void caffe_gpu_div(const int N, const Dtype* a, const Dtype* b, Dtype* y);
@@ -262,6 +279,11 @@ void caffe_gpu_dot(const int n, const Dtype* x, const Dtype* y, Dtype* out);
 
 template <typename Dtype>
 void caffe_gpu_asum(const int n, const Dtype* x, Dtype* y);
+
+template <typename Dtype>
+void caffe_gpu_asum1(const int n, const Dtype* x, Dtype* y,cublasHandle_t &handle);
+
+
 
 template<typename Dtype>
 void caffe_gpu_sign(const int n, const Dtype* x, Dtype* y);

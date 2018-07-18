@@ -55,6 +55,15 @@ class SoftmaxWithLossLayer : public LossLayer<Dtype> {
       : LossLayer<Dtype>(param) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
+  virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t* handle, 
+      cudaStream_t*  stream);
+
+
+
+     
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
@@ -123,6 +132,9 @@ class SoftmaxWithLossLayer : public LossLayer<Dtype> {
   LossParameter_NormalizationMode normalization_;
 
   int softmax_axis_, outer_num_, inner_num_;
+   //  增加流的支持
+  cudnnHandle_t*  handle_; 
+  cudaStream_t*   stream_;
 };
 
 }  // namespace caffe
