@@ -6,6 +6,8 @@
 
 namespace caffe {
 
+#define CUDNN_STREAMS_PER_GROUP 3
+#define GROUP 1
 template <typename Dtype>
 void InnerProductLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -61,9 +63,10 @@ void InnerProductLayer<Dtype>::LayerSetUp1(
       cudaStream_t*  stream) 
 {
   stream_=stream;
+  handle_=new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   for(int i=0;i<3;i++)
   {
-    cublasCreate(&handle_[i]) ;
+    cublasCreate(&handle_[i]);
     cublasSetStream(handle_[i],  stream_[i]);
   }
 
