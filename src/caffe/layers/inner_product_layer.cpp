@@ -61,7 +61,7 @@ void InnerProductLayer<Dtype>::LayerSetUp1(
       cudaStream_t*  stream) 
 {
   stream_=stream;
-  for(int i=0;i<3:i++)
+  for(int i=0;i<3;i++)
   {
     cublasCreate(&handle_[i]) ;
     cublasSetStream(handle_[i],  stream_[i]);
