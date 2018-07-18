@@ -52,7 +52,8 @@ class InnerProductLayer : public Layer<Dtype> {
   bool bias_term_;
   Blob<Dtype> bias_multiplier_;
   bool transpose_;  ///< if true, assume transposed weights
-  cudaStream_t*  stream_;
+  cudaStream_t*    stream_;
+  cublasHandle_t*  handle_;
 
 };
 

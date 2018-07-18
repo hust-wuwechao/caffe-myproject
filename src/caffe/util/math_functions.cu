@@ -43,6 +43,29 @@ void caffe_gpu_gemm<double>(const CBLAS_TRANSPOSE TransA,
 }
 
 template <>
+void caffe_gpu_gemm1<double>(const CBLAS_TRANSPOSE TransA,
+    const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+    const double alpha, const double* A, const double* B, const double beta,
+    double* C,
+    cublasHandle_t &handle) 
+  {
+  // Note that cublas follows fortran order.
+  int lda = (TransA == CblasNoTrans) ? K : M;
+  int ldb = (TransB == CblasNoTrans) ? N : K;
+  cublasOperation_t cuTransA =
+      (TransA == CblasNoTrans) ? CUBLAS_OP_N : CUBLAS_OP_T;
+  cublasOperation_t cuTransB =
+      (TransB == CblasNoTrans) ? CUBLAS_OP_N : CUBLAS_OP_T;
+  CUBLAS_CHECK(cublasDgemm(handle, cuTransB, cuTransA,
+      N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));
+}
+
+
+
+
+
+
+template <>
 void caffe_gpu_gemv<float>(const CBLAS_TRANSPOSE TransA, const int M,
     const int N, const float alpha, const float* A, const float* x,
     const float beta, float* y) {
@@ -51,6 +74,25 @@ void caffe_gpu_gemv<float>(const CBLAS_TRANSPOSE TransA, const int M,
   CUBLAS_CHECK(cublasSgemv(Caffe::cublas_handle(), cuTransA, N, M, &alpha,
       A, N, x, 1, &beta, y, 1));
 }
+
+
+
+
+
+
+
+template <>
+void caffe_gpu_gemv1<double>(const CBLAS_TRANSPOSE TransA, const int M,
+    const int N, const double alpha, const double* A, const double* x,
+    const double beta, double* y,
+    cublasHandle_t &handle) 
+  {
+  cublasOperation_t cuTransA =
+      (TransA == CblasNoTrans) ? CUBLAS_OP_T : CUBLAS_OP_N;
+  CUBLAS_CHECK(cublasDgemv(handle, cuTransA, N, M, &alpha,
+      A, N, x, 1, &beta, y, 1));
+}
+
 
 template <>
 void caffe_gpu_gemv<double>(const CBLAS_TRANSPOSE TransA, const int M,
@@ -61,6 +103,7 @@ void caffe_gpu_gemv<double>(const CBLAS_TRANSPOSE TransA, const int M,
   CUBLAS_CHECK(cublasDgemv(Caffe::cublas_handle(), cuTransA, N, M, &alpha,
       A, N, x, 1, &beta, y, 1));
 }
+
 
 template <>
 void caffe_gpu_axpy<float>(const int N, const float alpha, const float* X,

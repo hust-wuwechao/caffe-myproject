@@ -61,6 +61,12 @@ void InnerProductLayer<Dtype>::LayerSetUp1(
       cudaStream_t*  stream) 
 {
   stream_=stream;
+  for(int i=0;i<3:i++)
+  {
+    cublasCreate(&handle_[i]) ;
+    cublasSetStream(handle_[i],  stream_[i]);
+  }
+
   const int num_output = this->layer_param_.inner_product_param().num_output();
   bias_term_ = this->layer_param_.inner_product_param().bias_term();
   transpose_ = this->layer_param_.inner_product_param().transpose();

@@ -12,19 +12,28 @@ void InnerProductLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   const Dtype* bottom_data = bottom[0]->gpu_data();
   Dtype* top_data = top[0]->mutable_gpu_data();
   const Dtype* weight = this->blobs_[0]->gpu_data();
-  if (M_ == 1) {
+  if (M_ == 1) //  一般不会出现这种情况
+  {
+
+
     caffe_gpu_gemv<Dtype>(CblasNoTrans, N_, K_, (Dtype)1.,
                          weight, bottom_data, (Dtype)0., top_data);
     if (bias_term_)
       caffe_gpu_axpy<Dtype>(N_, bias_multiplier_.cpu_data()[0],
                             this->blobs_[1]->gpu_data(), top_data);
-  } else {
-    caffe_gpu_gemm<Dtype>(CblasNoTrans,
+  } 
+  else   ///
+  {
+
+
+    //   直接计算。
+    caffe_gpu_gemm1<Dtype>(CblasNoTrans,
                           transpose_ ? CblasNoTrans : CblasTrans,
                           M_, N_, K_, (Dtype)1.,
-                          bottom_data, weight, (Dtype)0., top_data);
+                        bottom_data, weight, (Dtype)0., top_data);
+    //   存在偏置
     if (bias_term_)
-      caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, M_, N_, 1, (Dtype)1.,
+      caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, M_, N_, 1, (Dtype)1.,
                             bias_multiplier_.gpu_data(),
                             this->blobs_[1]->gpu_data(), (Dtype)1., top_data);
   }
@@ -33,40 +42,55 @@ void InnerProductLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void InnerProductLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
-    const vector<Blob<Dtype>*>& bottom) {
-  if (this->param_propagate_down_[0]) {
+    const vector<Blob<Dtype>*>& bottom) 
+{
+  if (this->param_propagate_down_[0]) 
+  {
     const Dtype* top_diff = top[0]->gpu_diff();
     const Dtype* bottom_data = bottom[0]->gpu_data();
     // Gradient with respect to weight
-    if (transpose_) {
-      caffe_gpu_gemm<Dtype>(CblasTrans, CblasNoTrans,
+    if (transpose_) 
+    {
+      caffe_gpu_gemm1<Dtype>(handle_[1],CblasTrans, CblasNoTrans,
           K_, N_, M_,
           (Dtype)1., bottom_data, top_diff,
           (Dtype)1., this->blobs_[0]->mutable_gpu_diff());
-    } else {
-      caffe_gpu_gemm<Dtype>(CblasTrans, CblasNoTrans,
+    } 
+    else 
+    {
+      caffe_gpu_gemm1<Dtype>(handle_[1],CblasTrans, CblasNoTrans,
           N_, K_, M_,
           (Dtype)1., top_diff, bottom_data,
           (Dtype)1., this->blobs_[0]->mutable_gpu_diff());
     }
   }
-  if (bias_term_ && this->param_propagate_down_[1]) {
-    const Dtype* top_diff = top[0]->gpu_diff();
-    // Gradient with respect to bias
-    caffe_gpu_gemv<Dtype>(CblasTrans, M_, N_, (Dtype)1., top_diff,
+  //   计算偏置的梯度
+  if (bias_term_ && this->param_propagate_down_[1]) 
+  {
+      const Dtype* top_diff = top[0]->gpu_diff();
+     // Gradient with respect to bias
+     // 这里面变成了 举证和向量的乘法。
+      caffe_gpu_gemv1<Dtype>(handle_[2],CblasTrans, M_, N_, (Dtype)1., top_diff,
         bias_multiplier_.gpu_data(), (Dtype)1.,
         this->blobs_[1]->mutable_gpu_diff());
   }
-  if (propagate_down[0]) {
+  if (propagate_down[0])  //   计算数据的梯度
+  {
+    //  考虑这里面的 
+
     const Dtype* top_diff = top[0]->gpu_diff();
     // Gradient with respect to bottom data
-    if (transpose_) {
-      caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasTrans,
+
+    if (transpose_) 
+    {
+      caffe_gpu_gemm1<Dtype>(handel_[0],CblasNoTrans, CblasTrans,
           M_, K_, N_,
           (Dtype)1., top_diff, this->blobs_[0]->gpu_data(),
           (Dtype)0., bottom[0]->mutable_gpu_diff());
-    } else {
-      caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans,
+    } 
+    else 
+    {
+      caffe_gpu_gemm1<Dtype>(handle_[0],CblasNoTrans, CblasNoTrans,
           M_, K_, N_,
          (Dtype)1., top_diff, this->blobs_[0]->gpu_data(),
          (Dtype)0., bottom[0]->mutable_gpu_diff());

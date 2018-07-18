@@ -155,11 +155,27 @@ void caffe_gpu_gemm(const CBLAS_TRANSPOSE TransA,
     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
     const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype beta,
     Dtype* C);
+//  增加的代码
+template <typename Dtype>
+void caffe_gpu_gemm1(const CBLAS_TRANSPOSE TransA,
+    const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+    const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype beta,
+    Dtype* C,
+    cublasHandle_t &handle);
 
+
+//  增加的代码
 template <typename Dtype>
 void caffe_gpu_gemv(const CBLAS_TRANSPOSE TransA, const int M, const int N,
     const Dtype alpha, const Dtype* A, const Dtype* x, const Dtype beta,
     Dtype* y);
+
+template <typename Dtype>
+void caffe_gpu_gemv1(const CBLAS_TRANSPOSE TransA, const int M, const int N,
+    const Dtype alpha, const Dtype* A, const Dtype* x, const Dtype beta,
+    Dtype* y,
+    cublasHandle_t &handle);
+
 
 template <typename Dtype>
 void caffe_gpu_axpy(const int N, const Dtype alpha, const Dtype* X,
