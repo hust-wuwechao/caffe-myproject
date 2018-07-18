@@ -232,7 +232,8 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp1(
       kernel_h, kernel_w);
 
   // Create tensor descriptor(s) for data and corresponding convolution(s).
-  for (int i = 0; i < bottom.size(); i++) {
+  for (int i = 0; i < bottom.size(); i++) 
+  {
     cudnnTensorDescriptor_t bottom_desc;
     cudnn::createTensor4dDesc<Dtype>(&bottom_desc);
     bottom_descs_.push_back(bottom_desc);

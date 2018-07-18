@@ -26,8 +26,8 @@ class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype> {
 
   virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
-       cudnnHandle_t  handle,
-       cudaStream_t*  stream
+       cudnnHandle_t*   handle,
+       cudaStream_t*    stream
      );
   
 
@@ -42,8 +42,8 @@ class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype> {
      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
   bool handles_setup_;
-  cudaStream_t*             stream_1;
-  cudnnHandle_t             handle_1;
+  cudaStream_t*               stream_1;
+  cudnnHandle_t*              handle_1;
   cudnnTensorDescriptor_t bottom_desc_;
   cudnnTensorDescriptor_t top_desc_;
 };

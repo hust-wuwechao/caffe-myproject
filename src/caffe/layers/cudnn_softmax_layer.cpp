@@ -19,12 +19,20 @@ void CuDNNSoftmaxLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 }
 void CuDNNSoftmaxLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
-      cudnnHandle_t* handle, 
-      cudaStream_t*  stream) 
+      cudnnHandle_t*  handle, 
+      cudaStream_t*   stream) 
 {
   SoftmaxLayer<Dtype>::LayerSetUp(bottom, top);     
+  
+  
   stream_1=stream;
+
   handle_1=handle;
+
+
+
+
+
   /* handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   for(int i=0;i<3;i++)
   {
@@ -33,7 +41,7 @@ void CuDNNSoftmaxLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
   } */
   // Initialize CUDNN.
   //CUDNN_CHECK(cudnnCreate(&handle_));
-  
+
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
   handles_setup_ = true;
