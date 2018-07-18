@@ -34,8 +34,7 @@ void CuDNNSoftmaxLayer<Dtype>::LayerSetUp1(
     cublasSetStream(handle_[i],  stream_[i]);
   } */
   // Initialize CUDNN.
-  //CUDNN_CHECK(cudnnCreate(&handle_));
-
+  //CUDNN_CHECK(cudnnCreate(&handle_))
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
   handles_setup_ = true;

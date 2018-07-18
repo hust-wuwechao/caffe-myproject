@@ -12,7 +12,7 @@
 namespace caffe 
 {
 
-#ifdef USE_CUDNN
+//#ifdef USE_CUDNN
 /**
  * @brief cuDNN implementation of SoftmaxLayer.
  *        Fallback to SoftmaxLayer for CPU mode.
@@ -47,6 +47,7 @@ class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype>
  protected:
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
@@ -56,7 +57,7 @@ class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype>
   cudnnTensorDescriptor_t     bottom_desc_;
   cudnnTensorDescriptor_t     top_desc_;
 };
-#endif
+//#endif
 
 }  // namespace caffe
 
