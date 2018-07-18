@@ -9,7 +9,8 @@
 
 #include "caffe/layers/softmax_layer.hpp"
 
-namespace caffe {
+namespace caffe 
+{
 
 #ifdef USE_CUDNN
 /**
@@ -17,23 +18,31 @@ namespace caffe {
  *        Fallback to SoftmaxLayer for CPU mode.
  */
 template <typename Dtype>
-class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype> {
+class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype>
+{
  public:
   explicit CuDNNSoftmaxLayer(const LayerParameter& param)
       : SoftmaxLayer<Dtype>(param), handles_setup_(false) {}
-  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+
+  virtual void LayerSetUp(
+      const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
-  virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+
+  virtual void LayerSetUp1(
+      const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
-       cudnnHandle_t*   handle,
-       cudaStream_t*    stream
+      cudnnHandle_t*   handle,
+      cudaStream_t*    stream
      );
   
 
-  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+  virtual void Reshape(
+      const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
   virtual ~CuDNNSoftmaxLayer();
+
 
  protected:
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
@@ -44,8 +53,8 @@ class CuDNNSoftmaxLayer : public SoftmaxLayer<Dtype> {
   bool handles_setup_;
   cudaStream_t*               stream_1;
   cudnnHandle_t*              handle_1;
-  cudnnTensorDescriptor_t bottom_desc_;
-  cudnnTensorDescriptor_t top_desc_;
+  cudnnTensorDescriptor_t     bottom_desc_;
+  cudnnTensorDescriptor_t     top_desc_;
 };
 #endif
 
