@@ -652,8 +652,8 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
   
   for (int i = start; i <= end; ++i)
    {
-    LOG_IF(INFO, Caffe::root_solver())
-        << "before_forward_.size() "<<before_forward_.size();
+    /* LOG_IF(INFO, Caffe::root_solver())
+        << "before_forward_.size() "<<before_forward_.size(); */
     for (int c = 0; c < before_forward_.size(); ++c) 
     {
       //  这是干嘛？？？？？？？
@@ -666,22 +666,22 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
     Dtype layer_loss = layers_[i]->Forward(bottom_vecs_[i], top_vecs_[i]);
 
 
-    LOG_IF(INFO, Caffe::root_solver())
-        << "typeid(x).name() "<<typeid(*layers_[i]).name(); 
+   /*  LOG_IF(INFO, Caffe::root_solver())
+        << "typeid(x).name() "<<typeid(*layers_[i]).name();  */
     //printf("typeid(x).name() is %s\n",typeid(x).name());
 
 
     //  
-    LOG_IF(INFO, Caffe::root_solver())
-        << "layer_loss "<<layer_loss; 
+   /*  LOG_IF(INFO, Caffe::root_solver())
+        << "layer_loss "<<layer_loss;  */
     loss += layer_loss;
 
 
 
     if (debug_info_)
     { ForwardDebugInfo(i); }
-    LOG_IF(INFO, Caffe::root_solver())
-        << "after_forward_.size() "<<after_forward_.size();
+   /*  LOG_IF(INFO, Caffe::root_solver())
+        << "after_forward_.size() "<<after_forward_.size(); */
     for (int c = 0; c < after_forward_.size(); ++c) 
     {
       //  这又是干嘛？？？？？
