@@ -119,7 +119,8 @@ void PoolingLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
   }
   CHECK_GT(kernel_h_, 0) << "Filter dimensions cannot be zero.";
   CHECK_GT(kernel_w_, 0) << "Filter dimensions cannot be zero.";
-  if (!pool_param.has_pad_h()) {
+  if (!pool_param.has_pad_h()) 
+  {
     pad_h_ = pad_w_ = pool_param.pad();
   } else {
     pad_h_ = pool_param.pad_h();
