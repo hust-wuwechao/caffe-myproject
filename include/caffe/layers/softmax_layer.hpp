@@ -21,6 +21,17 @@ class SoftmaxLayer : public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+  
+  virtual void LayerSetUp(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top
+    );
+
+  virtual void LayerSetUp1(
+    const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top, 
+    cudnnHandle_t*  handle, 
+    cudaStream_t*   stream);
 
   virtual inline const char* type() const { return "Softmax"; }
   virtual inline int ExactNumBottomBlobs() const { return 1; }
@@ -55,7 +66,7 @@ class SoftmaxLayer : public Layer<Dtype> {
   /// scale is an intermediate Blob to hold temporary results.
   Blob<Dtype> scale_;
   //  增加流调度的过程。
-  cudnnHandle_t*   handle_;
+  cublasHandle_t*   handle_;
   cudaStream_t*    stream_;
 
 };

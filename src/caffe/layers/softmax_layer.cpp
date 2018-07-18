@@ -7,14 +7,14 @@
 namespace caffe {
 
 template <typename Dtype>
-void SoftmaxLayer<Dtype>::LayerSetUp(
+void SoftmaxLayer<Dtype>::LayerSetUp
+   (
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top 
     )
     {
-      //PoolingLayer<Dtype>::LayerSetUp(bottom, top);
-
-       Layer<Dtype>::LayerSetUp(bottom, top);
+        //PoolingLayer<Dtype>::LayerSetUp(bottom, top);
+        Layer<Dtype>::LayerSetUp(bottom, top);
     }
 
 template <typename Dtype>
