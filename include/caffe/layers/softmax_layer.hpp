@@ -25,12 +25,12 @@ class SoftmaxLayer : public Layer<Dtype> {
   virtual inline const char* type() const { return "Softmax"; }
   virtual inline int ExactNumBottomBlobs() const { return 1; }
   virtual inline int ExactNumTopBlobs() const { return 1; }
-  virtual void   LayerSetUp(
+  virtual void LayerSetUp(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
     cudnnHandle_t* handle , 
     cudaStream_t*  stream);
-  virtual void   LayerSetUp1(
+  virtual void  LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
     cudnnHandle_t* handle , 
