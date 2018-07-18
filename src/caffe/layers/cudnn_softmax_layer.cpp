@@ -18,6 +18,8 @@ void CuDNNSoftmaxLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
   handles_setup_ = true;
 }
+
+template <typename Dtype>
 void CuDNNSoftmaxLayer<Dtype>::LayerSetUp1(
       const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
