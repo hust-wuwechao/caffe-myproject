@@ -213,7 +213,7 @@ template <typename Dtype>
 void caffe_gpu_scal(const int N, const Dtype alpha, Dtype *X);
 
 template <typename Dtype>
-void caffe_gpu_scal(const int N, const Dtype alpha, Dtype *X,cublasHandle_t &handl);
+void caffe_gpu_scal1(const int N, const Dtype alpha, Dtype *X,cublasHandle_t &handl);
 
 
 
