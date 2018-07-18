@@ -268,13 +268,13 @@ __global__ void set_kernel(const int n, const Dtype alpha, Dtype* y) {
 }
 
 template <typename Dtype>
-void caffe_gpu_set(const int N, const Dtype alpha, Dtype* Y, cudaStream_t &stream) {
+void caffe_gpu_set(const int N, const Dtype alpha, Dtype* Y) {
   if (alpha == 0) {
     CUDA_CHECK(cudaMemset(Y, 0, sizeof(Dtype) * N));  // NOLINT(caffe/alt_fn)
     return;
   }
   // NOLINT_NEXT_LINE(whitespace/operators)
-  set_kernel<Dtype><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0 ,stream>>>(
+  set_kernel<Dtype><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
       N, alpha, Y);
 }
 
@@ -285,7 +285,8 @@ template void caffe_gpu_set<double>(const int N, const double alpha, double* Y);
 
 
 template <typename Dtype>
-void caffe_gpu_set1(const int N, const Dtype alpha, Dtype* Y, cudaStream_t &stream) {
+void caffe_gpu_set1(const int N, const Dtype alpha, Dtype* Y, cudaStream_t &stream) 
+{
   if (alpha == 0) {
     CUDA_CHECK(cudaMemset(Y, 0, sizeof(Dtype) * N));  // NOLINT(caffe/alt_fn)
     return;

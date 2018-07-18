@@ -9,9 +9,8 @@ namespace caffe {
 template <typename Dtype>
 void SoftmaxLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top, 
-    cudnnHandle_t* handle , 
-    cudaStream_t*  stream)
+    const vector<Blob<Dtype>*>& top 
+    )
     {
       //PoolingLayer<Dtype>::LayerSetUp(bottom, top);
 
@@ -22,12 +21,11 @@ template <typename Dtype>
 void SoftmaxLayer<Dtype>::LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
-    cudnnHandle_t* handle , 
-    cudaStream_t*  stream)
+    cudnnHandle_t*  handle, 
+    cudaStream_t*   stream)
     {
          Layer<Dtype>::LayerSetUp(bottom, top);
          stream_=stream;
-
     }
 
 

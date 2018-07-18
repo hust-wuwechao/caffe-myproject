@@ -27,9 +27,8 @@ class SoftmaxLayer : public Layer<Dtype> {
   virtual inline int ExactNumTopBlobs() const { return 1; }
   virtual void LayerSetUp(
     const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top, 
-    cudnnHandle_t* handle , 
-    cudaStream_t*  stream);
+    const vector<Blob<Dtype>*>& top
+   );
   virtual void  LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
