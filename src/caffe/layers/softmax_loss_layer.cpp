@@ -65,7 +65,7 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp1(
   
   LOG(INFO)<<"在这里进行调用构造softmax层";
   LOG_IF(INFO, Caffe::root_solver())
-        << "typeid(x).name() "<<typeid(softmax_layer_).name();
+        << "typeid(x).name() "<<typeid(&softmax_layer_).name();
 
   softmax_bottom_vec_.clear();
   softmax_bottom_vec_.push_back(bottom[0]);
