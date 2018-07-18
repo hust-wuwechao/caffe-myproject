@@ -21,7 +21,7 @@ class SoftmaxLayer : public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
-  
+  /* 
   virtual void LayerSetUp(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top
@@ -31,7 +31,7 @@ class SoftmaxLayer : public Layer<Dtype> {
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top, 
     cudnnHandle_t*  handle, 
-    cudaStream_t*   stream);
+    cudaStream_t*   stream); */
 
   virtual inline const char* type() const { return "Softmax"; }
   virtual inline int ExactNumBottomBlobs() const { return 1; }
