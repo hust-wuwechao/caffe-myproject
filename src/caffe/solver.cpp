@@ -200,7 +200,8 @@ void Solver<Dtype>::InitTestNets() {
 }
 
 template <typename Dtype>
-void Solver<Dtype>::Step(int iters) {
+void Solver<Dtype>::Step(int iters)
+ {
   const int start_iter = iter_;
   const int stop_iter = iter_ + iters;
   int average_loss = this->param_.average_loss();
@@ -232,14 +233,16 @@ void Solver<Dtype>::Step(int iters) {
     for (int i = 0; i < param_.iter_size(); ++i) 
     {
       loss += net_->ForwardBackward();
-      //  在这里面加入同步的设置。
-      
-      cudaDeviceSynchronize();
+       //  在这里面加入同步的设置。
+       //cudaDeviceSynchronize();
     }
     loss /= param_.iter_size();
     // average the loss across iterations for smoothed reporting
+
+
     UpdateSmoothedLoss(loss, start_iter, average_loss);
-    if (display) {
+    if (display) 
+    {
       float lapse = iteration_timer_.Seconds();
       float per_s = (iter_ - iterations_last_) / (lapse ? lapse : 1);
       LOG_IF(INFO, Caffe::root_solver()) << "Iteration " << iter_
@@ -257,7 +260,8 @@ void Solver<Dtype>::Step(int iters) {
             net_->blob_loss_weights()[net_->output_blob_indices()[j]];
         for (int k = 0; k < result[j]->count(); ++k) {
           ostringstream loss_msg_stream;
-          if (loss_weight) {
+          if (loss_weight) 
+          {
             loss_msg_stream << " (* " << loss_weight
                             << " = " << loss_weight * result_vec[k] << " loss)";
           }

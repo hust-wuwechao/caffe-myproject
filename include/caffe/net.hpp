@@ -13,7 +13,8 @@
 #include "caffe/proto/caffe.pb.h"
 
 namespace caffe {
-
+#define CUDNN_STREAMS_PER_GROUP 3
+#define GROUP 1
 /**
  * @brief Connects Layer%s together into a directed acyclic graph (DAG)
  *        specified by a NetParameter.
@@ -98,6 +99,14 @@ class Net
     Dtype loss;
     Forward(&loss);
     Backward();
+
+    //  
+    // cudaDeviceSynchronize()
+    for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+    {
+       cudaStreamSynchronize(stream_[g]);  
+    }
+    //这里面会同步指定的流。
     return loss;
   }
 
