@@ -38,7 +38,7 @@ class CuDNNLRNLayer : public LRNLayer<Dtype> {
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
   bool handles_setup_;
-  cudnnHandle_t             handle_;
+  //cudnnHandle_t             handle_;
   cudnnLRNDescriptor_t norm_desc_;
   cudnnTensorDescriptor_t bottom_desc_, top_desc_;
 

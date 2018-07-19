@@ -71,7 +71,7 @@ CuDNNLRNLayer<Dtype>::~CuDNNLRNLayer() {
   cudnnDestroyTensorDescriptor(top_desc_);
 
   // destroy LRN handle
-  cudnnDestroy(handle_);
+  //cudnnDestroy(handle_);
 }
 
 INSTANTIATE_CLASS(CuDNNLRNLayer);
