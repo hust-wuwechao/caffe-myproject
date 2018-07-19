@@ -48,7 +48,7 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
 
 
 
-//  加入了的代码的改变你好
+//  加入了的代码的改变你好。。。
  protected:
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
