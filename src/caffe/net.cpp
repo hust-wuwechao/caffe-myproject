@@ -250,7 +250,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     CHECK_LE(param_size, num_param_blobs)
         << "Too many params specified for layer " << layer_param.name();
     ParamSpec default_param_spec;
-    for (int param_id = 0; param_id < num_param_blobs; ++param_id) {
+    for (int param_id = 0; param_id < num_param_blobs; ++param_id)
+    {
       const ParamSpec* param_spec = (param_id < param_size) ?
           &layer_param.param(param_id) : &default_param_spec;
       const bool param_need_backward = param_spec->lr_mult() != 0;
@@ -259,8 +260,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
                                                   param_need_backward);
     }
     for (int param_id = 0; param_id < num_param_blobs; ++param_id)
-   {
-      AppendParam(param, layer_id, param_id);
+    {
+       AppendParam(param, layer_id, param_id);
     }
     // Finally, set the backward flag
     layer_need_backward_.push_back(need_backward);

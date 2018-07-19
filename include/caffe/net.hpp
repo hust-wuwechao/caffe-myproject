@@ -98,10 +98,11 @@ class Net
   {
     Dtype loss;
     Forward(&loss);
-    for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+    //  看一一下这个同步是不是需要的。
+    /* for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
         cudaStreamSynchronize(stream_[g]);  
-    }
+    } */
 
     Backward();
 
