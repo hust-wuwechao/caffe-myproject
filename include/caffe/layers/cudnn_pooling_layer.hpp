@@ -44,6 +44,11 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
   virtual inline int ExactNumTopBlobs() const { return 1; }
 
 
+
+
+
+
+//  加入了的代码的改变
  protected:
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
