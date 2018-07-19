@@ -10,6 +10,10 @@ void CuDNNLRNLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
   LRNLayer<Dtype>::LayerSetUp(bottom, top);
 
+
+
+
+
   CUDNN_CHECK(cudnnCreate(&handle_));
   CUDNN_CHECK(cudnnCreateLRNDescriptor(&norm_desc_));
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
@@ -17,7 +21,30 @@ void CuDNNLRNLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
   // create a LRN handle
   handles_setup_ = true;
+  size_ = this->layer_param().lrn_param().local_size();
+  alpha_ = this->layer_param().lrn_param().alpha();
+  beta_ = this->layer_param().lrn_param().beta();
+  k_ = this->layer_param().lrn_param().k();
+}
 
+
+template <typename Dtype>
+void CuDNNLRNLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+    const vector<Blob<Dtype>*>& top,
+    cudnnHandle_t* handle, 
+    cudaStream_t*  stream) 
+  {
+
+   LRNLayer<Dtype>::LayerSetUp(bottom, top);
+   stream_=stream;
+   handle_=handle;
+   //CUDNN_CHECK(cudnnCreate(&handle_));
+   CUDNN_CHECK(cudnnCreateLRNDescriptor(&norm_desc_));
+   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
+   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
+
+  // create a LRN handle
+  handles_setup_ = true;
   size_ = this->layer_param().lrn_param().local_size();
   alpha_ = this->layer_param().lrn_param().alpha();
   beta_ = this->layer_param().lrn_param().beta();

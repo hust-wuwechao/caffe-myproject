@@ -19,6 +19,14 @@ class CuDNNLRNLayer : public LRNLayer<Dtype> {
       : LRNLayer<Dtype>(param), handles_setup_(false) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
+   virtual void LayerSetUp1(
+     const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t* handle, 
+      cudaStream_t*  stream);
+
+    
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   virtual ~CuDNNLRNLayer();
@@ -36,6 +44,8 @@ class CuDNNLRNLayer : public LRNLayer<Dtype> {
 
   int size_;
   Dtype alpha_, beta_, k_;
+  cudnnHandle_t*   handle_;
+  cudaStream_t*    stream_;
 };
 #endif
 
