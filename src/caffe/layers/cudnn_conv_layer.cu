@@ -88,7 +88,7 @@ void CuDNNConvolutionLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     {
       // Gradient w.r.t. bias.
       //  zai  0 流里面
-      LOG(INFO)<<"分组的个数"<<g<<"this->group_"<<this->group_;
+      //LOG(INFO)<<"分组的个数"<<g<<"this->group_"<<this->group_;
       if (this->bias_term_ && this->param_propagate_down_[1]) 
       {
         /* CUDNN_CHECK(cudnnConvolutionBackwardBias(handle_[0*this->group_ + g],
