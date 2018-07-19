@@ -103,15 +103,14 @@ class Net
     {
         cudaStreamSynchronize(stream_[g]);  
     } */
-
     Backward();
 
     //  
     // cudaDeviceSynchronize()
-    for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+   /*  for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
        cudaStreamSynchronize(stream_[g]);  
-    }
+    } */
     //这里面会同步指定的流。
     return loss;
   }
@@ -166,7 +165,8 @@ class Net
    * @brief returns the bottom vecs for each layer -- usually you won't
    *        need this unless you do per-layer checks such as gradients.
    */
-  inline const vector<vector<Blob<Dtype>*> >& bottom_vecs() const {
+  inline const vector<vector<Blob<Dtype>*> >& bottom_vecs() const 
+  {
     return bottom_vecs_;
   }
   /**
