@@ -47,7 +47,7 @@ void CuDNNSoftmaxLayer<Dtype>::LayerSetUp1(
 template <typename Dtype>
 void CuDNNSoftmaxLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  LOG(INFO)<<"进入CuDNNSoftmaxLayer<Dtype>::Reshape";
+  //LOG(INFO)<<"进入CuDNNSoftmaxLayer<Dtype>::Reshape";
   SoftmaxLayer<Dtype>::Reshape(bottom, top);
   int N = this->outer_num_;
   int K = bottom[0]->shape(this->softmax_axis_);
