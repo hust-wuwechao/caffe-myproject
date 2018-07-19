@@ -9,12 +9,9 @@ template <typename Dtype>
 void CuDNNLRNLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
   LRNLayer<Dtype>::LayerSetUp(bottom, top);
-
-
-
-
-
-  CUDNN_CHECK(cudnnCreate(&handle_));
+  //  这里面其实应该下  new 一个数组的。
+  
+  CUDNN_CHECK(cudnnCreate(&handle_[0]));
   CUDNN_CHECK(cudnnCreateLRNDescriptor(&norm_desc_));
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);
