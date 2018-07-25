@@ -132,7 +132,7 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   // subtract mean
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, num, channels_, 1, 1,
       batch_sum_multiplier_.gpu_data(), mean_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data().handle_[0]);
+      num_by_chans_.mutable_gpu_data(),handle_[0]);
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, channels_ * num,
       spatial_dim, 1, -1, num_by_chans_.gpu_data(),
       spatial_sum_multiplier_.gpu_data(), 1., top_data,handle_[0]);
@@ -277,9 +277,13 @@ void BatchNormLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   if (bottom[0] != top[0]) {
     top_diff = top[0]->gpu_diff();
   } else {
-    caffe_copy1(x_norm_.count(), top[0]->gpu_diff(), x_norm_.mutable_gpu_diff());
+    caffe_copy1(x_norm_.count(), top[0]->gpu_diff(), x_norm_.mutable_gpu_diff(),stream_[0]);
+    //   保证这里面完成才能够执行后面的。
+    //   添加事件的依赖吧。
+    //   
     top_diff = x_norm_.gpu_diff();
   }
+  
   Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
   if (use_global_stats_) {
     caffe_gpu_div1(temp_.count(), top_diff, temp_.gpu_data(), bottom_diff,stream_[0]);
