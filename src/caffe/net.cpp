@@ -536,7 +536,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           layers_[layer_id]->type()=="Softmax"||
           layers_[layer_id]->type()=="LRN"    ||
           layers_[layer_id]->type()==" BatchNorm"||
-          layers_[layer_id]->type()=="Scale"      ||
+          layers_[layer_id]->type()=="Scale"  
        ) 
       {
          //  对于resnet 不同的网络采用不同的选择
