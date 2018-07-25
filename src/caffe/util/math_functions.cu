@@ -226,16 +226,16 @@ template <>
 void caffe_gpu_axpby1<float>(const int N, const float alpha, const float* X,
     const float beta, float* Y,cublasHandle_t &handle) 
 {
-  caffe_gpu_scal<float>(N, beta, Y,handle);
-  caffe_gpu_axpy<float>(N, alpha, X, Y,handle);
+  caffe_gpu_scal1<float>(N, beta, Y,handle);
+  caffe_gpu_axpy1<float>(N, alpha, X, Y,handle);
 }
 
 template <>
 void caffe_gpu_axpby1<double>(const int N, const double alpha, const double* X,
     const double beta, double* Y,cublasHandle_t &handle) 
 {
-  caffe_gpu_scal<double>(N, beta, Y,handle);
-  caffe_gpu_axpy<double>(N, alpha, X, Y,handle);
+  caffe_gpu_scal1<double>(N, beta, Y,handle);
+  caffe_gpu_axpy1<double>(N, alpha, X, Y,handle);
 }
 
 template <>
