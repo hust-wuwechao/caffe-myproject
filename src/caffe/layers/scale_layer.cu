@@ -57,7 +57,7 @@ void ScaleLayer<Dtype>::Forward_gpu(
   else 
   {
     ScaleForward<Dtype>    // NOLINT_NEXT_LINE(whitespace/operators)
-        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream[0]>>>(
+        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
         count, bottom_data, scale_data, scale_dim_, inner_dim_, top_data);
   }
 }
