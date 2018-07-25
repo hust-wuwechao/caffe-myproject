@@ -161,7 +161,7 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
           bias_layer_->Backward(top, bias_propagate_down_, bias_bottom_vec_);
   }
   const bool scale_param = (bottom.size() == 1);
-  LOG(INFO)<<"scale_param"<<""
+  LOG(INFO)<<"scale_param"<<scale_param;
   Blob<Dtype>* scale = scale_param ? this->blobs_[0].get() : bottom[1];
   if ((!scale_param && propagate_down[1]) ||(scale_param && this->param_propagate_down_[0])) 
   {
