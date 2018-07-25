@@ -116,8 +116,10 @@ void caffe_copy1(const int N, const Dtype* X, Dtype* Y,cudaStream_t &stream) {
     if (Caffe::mode() == Caffe::GPU) {
     #ifndef CPU_ONLY
       // NOLINT_NEXT_LINE(caffe/alt_fn)
-      //  采用
-      CUDA_CHECK(cudaMemcpy(Y, X, sizeof(Dtype)* N, cudaMemcpyDefault,stream));
+      //  采用同步辅助的方式，所以会进行阻塞。
+      //  这里面如何使用流呢？
+      //  CUDA_CHECK(cudaMemcpy(Y, X, sizeof(Dtype)* N, cudaMemcpyDefault,stream));
+       CUDA_CHECK(cudaMemcpy(Y, X, sizeof(Dtype)* N, cudaMemcpyDefault));
     #else
       NO_GPU;
     #endif
