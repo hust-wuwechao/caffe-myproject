@@ -161,8 +161,10 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
           bias_layer_->Backward(top, bias_propagate_down_, bias_bottom_vec_);
   }
   const bool scale_param = (bottom.size() == 1);
+  LOG(INFO)<<"scale_param"<<""
   Blob<Dtype>* scale = scale_param ? this->blobs_[0].get() : bottom[1];
-  if ((!scale_param && propagate_down[1]) ||(scale_param && this->param_propagate_down_[0])) {
+  if ((!scale_param && propagate_down[1]) ||(scale_param && this->param_propagate_down_[0])) 
+  {
     const Dtype* top_diff = top[0]->cpu_diff();
     //   是不是原地操作指针是不是相等
     const bool in_place = (bottom[0] == top[0]);
@@ -180,7 +182,13 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 
     Dtype* product = (is_eltwise ? scale->mutable_cpu_diff() :
         (in_place ? temp_.mutable_cpu_data() : bottom[0]->mutable_cpu_diff())); 
-
+     LOG(INFO<<"inner_dim_"<<inner_dim_;
+      LOG(INFO<<"sum_result_.count()"<<sum_result_.count();
+       LOG(INFO<<"scale_param"<<scale_param;
+        LOG(INFO<<"outer_dim_"<<outer_dim_;
+         LOG(INFO<<"bottom.size()"<<bottom.size();
+          LOG(INFO<<"bottom[0]"<<bottom[1].shape_string();
+           //LOG(INFO<<""<<inner_dim_;
     caffe_mul(top[0]->count(), top_diff, bottom_data, product);
     if (!is_eltwise) 
     {
@@ -193,6 +201,7 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       {
         const Dtype* sum_mult = sum_multiplier_.cpu_data();
         Dtype* scale_diff = scale->mutable_cpu_diff();
+        
         if (scale_param) 
         {
           Dtype result = caffe_cpu_dot(inner_dim_, product, sum_mult);
@@ -239,7 +248,7 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         }
       }
     }
-  }
+   }
   //  并行的机会又来了
   if (propagate_down[0]) 
   {
