@@ -28,29 +28,36 @@ __global__ void ScaleBiasForward(const int n, const Dtype* in,
 
 template <typename Dtype>
 void ScaleLayer<Dtype>::Forward_gpu(
-    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top)
+{
   const int count = top[0]->count();
+
   const Dtype* bottom_data = bottom[0]->gpu_data();
-  if (bottom[0] == top[0]) {
+
+  if (bottom[0] == top[0]) 
+  {
     // in-place computation; need to store bottom data before overwriting it.
     // Note that this is only necessary for Backward; we could skip this if not
     // doing Backward, but Caffe currently provides no way of knowing whether
     // we'll need to do Backward at the time of the Forward call.
-    caffe_copy(bottom[0]->count(), bottom[0]->gpu_data(),
-               temp_.mutable_gpu_data());
+    caffe_copy1(bottom[0]->count(), bottom[0]->gpu_data(),
+               temp_.mutable_gpu_data(),stream_[0]);
   }
   const Dtype* scale_data =
       ((bottom.size() > 1) ? bottom[1] : this->blobs_[0].get())->gpu_data();
   Dtype* top_data = top[0]->mutable_gpu_data();
-  if (bias_layer_) {
+  if (bias_layer_) 
+  {
     const Dtype* bias_data = this->blobs_[bias_param_id_]->gpu_data();
-    ScaleBiasForward<Dtype>  // NOLINT_NEXT_LINE(whitespace/operators)
-        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS>>>(
+    ScaleBiasForward<Dtype>    // NOLINT_NEXT_LINE(whitespace/operators)
+        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
         count, bottom_data, scale_data, bias_data, scale_dim_, inner_dim_,
         top_data);
-  } else {
-    ScaleForward<Dtype>  // NOLINT_NEXT_LINE(whitespace/operators)
-        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS>>>(
+  } 
+  else 
+  {
+    ScaleForward<Dtype>    // NOLINT_NEXT_LINE(whitespace/operators)
+        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream[0]>>>(
         count, bottom_data, scale_data, scale_dim_, inner_dim_, top_data);
   }
 }

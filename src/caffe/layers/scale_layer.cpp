@@ -73,6 +73,86 @@ void ScaleLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 }
 
 template <typename Dtype>
+void ScaleLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudaStream_t*    stream,
+      cublasHandle_t*  handle) 
+{
+  const ScaleParameter& param = this->layer_param_.scale_param();
+  stream_=stream;
+  handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  for(int i=0;i<1;i++)
+  {
+    cublasCreate(&handle_[i]);
+    cublasSetStream(handle_[i],  stream_[i]);
+  }
+  if (bottom.size() == 1 && this->blobs_.size() > 0) 
+  {
+    LOG(INFO) << "Skipping parameter initialization";
+  } 
+  else if 
+  (bottom.size() == 1) 
+  {
+    // scale is a learned parameter; initialize it
+    axis_ = bottom[0]->CanonicalAxisIndex(param.axis());
+    const int num_axes = param.num_axes();
+    CHECK_GE(num_axes, -1) << "num_axes must be non-negative, "
+                           << "or -1 to extend to the end of bottom[0]";
+    if (num_axes >= 0) {
+      CHECK_GE(bottom[0]->num_axes(), axis_ + num_axes)
+          << "scale blob's shape extends past bottom[0]'s shape when applied "
+          << "starting with bottom[0] axis = " << axis_;
+    }
+    this->blobs_.resize(1);
+    const vector<int>::const_iterator& shape_start =
+        bottom[0]->shape().begin() + axis_;
+    const vector<int>::const_iterator& shape_end =
+        (num_axes == -1) ? bottom[0]->shape().end() : (shape_start + num_axes);
+    vector<int> scale_shape(shape_start, shape_end);
+    this->blobs_[0].reset(new Blob<Dtype>(scale_shape));
+    FillerParameter filler_param(param.filler());
+    if (!param.has_filler()) {
+      // Default to unit (1) filler for identity operation.
+      filler_param.set_type("constant");
+      filler_param.set_value(1);
+    }
+    shared_ptr<Filler<Dtype> > filler(GetFiller<Dtype>(filler_param));
+    filler->Fill(this->blobs_[0].get());
+  }
+  if (param.bias_term()) {
+    LayerParameter layer_param(this->layer_param_);
+    layer_param.set_type("Bias");
+    BiasParameter* bias_param = layer_param.mutable_bias_param();
+    bias_param->set_axis(param.axis());
+    if (bottom.size() > 1) {
+      bias_param->set_num_axes(bottom[1]->num_axes());
+    } else {
+      bias_param->set_num_axes(param.num_axes());
+    }
+    bias_param->mutable_filler()->CopyFrom(param.bias_filler());
+    bias_layer_ = LayerRegistry<Dtype>::CreateLayer(layer_param);
+    bias_bottom_vec_.resize(1);
+    bias_bottom_vec_[0] = bottom[0];
+    bias_layer_->SetUp(bias_bottom_vec_, top);
+    if (this->blobs_.size() + bottom.size() < 3) {
+      // case: blobs.size == 1 && bottom.size == 1
+      // or blobs.size == 0 && bottom.size == 2
+      bias_param_id_ = this->blobs_.size();
+      this->blobs_.resize(bias_param_id_ + 1);
+      this->blobs_[bias_param_id_] = bias_layer_->blobs()[0];
+    } else {
+      // bias param already initialized
+      bias_param_id_ = this->blobs_.size() - 1;
+      bias_layer_->blobs()[0] = this->blobs_[bias_param_id_];
+    }
+    bias_propagate_down_.resize(1, false);
+  }
+  this->param_propagate_down_.resize(this->blobs_.size(), true);
+}
+
+
+
+template <typename Dtype>
 void ScaleLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   const ScaleParameter& param = this->layer_param_.scale_param();
