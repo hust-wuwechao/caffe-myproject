@@ -86,23 +86,59 @@ template <typename Dtype>
 void caffe_copy(const int N, const Dtype* X, Dtype* Y) {
   if (X != Y) {
     if (Caffe::mode() == Caffe::GPU) {
-#ifndef CPU_ONLY
+    #ifndef CPU_ONLY
       // NOLINT_NEXT_LINE(caffe/alt_fn)
+      //  采用
       CUDA_CHECK(cudaMemcpy(Y, X, sizeof(Dtype) * N, cudaMemcpyDefault));
-#else
+    #else
       NO_GPU;
-#endif
-    } else {
+    #endif
+    } 
+    else
+     {
       memcpy(Y, X, sizeof(Dtype) * N);  // NOLINT(caffe/alt_fn)
     }
   }
 }
 
 template void caffe_copy<int>(const int N, const int* X, int* Y);
+
 template void caffe_copy<unsigned int>(const int N, const unsigned int* X,
     unsigned int* Y);
+
 template void caffe_copy<float>(const int N, const float* X, float* Y);
+
 template void caffe_copy<double>(const int N, const double* X, double* Y);
+
+
+void caffe_copy1(const int N, const Dtype* X, Dtype* Y,cudaStream_t &stream) {
+  if (X != Y) {
+    if (Caffe::mode() == Caffe::GPU) {
+    #ifndef CPU_ONLY
+      // NOLINT_NEXT_LINE(caffe/alt_fn)
+      //  采用
+      CUDA_CHECK(cudaMemcpy(Y, X, sizeof(Dtype) * N, cudaMemcpyDefault,stream));
+    #else
+      NO_GPU;
+    #endif
+    } 
+    else
+     {
+      memcpy(Y, X, sizeof(Dtype) * N);  // NOLINT(caffe/alt_fn)
+    }
+  }
+}
+
+template void caffe_copy1<int>(const int N, const int* X, int* Y,cudaStream &stream);
+
+template void caffe_copy1<unsigned int>(const int N, const unsigned int* X,
+    unsigned int* Y,cudaStream_t &stream);
+
+template void caffe_copy1<float>(const int N, const float* X, float* Y,cudaStream_t &stream);
+
+template void caffe_copy1<double>(const int N, const double* X, double* Y,cudaStream_t &stream);
+
+
 
 template <>
 void caffe_scal<float>(const int N, const float alpha, float *X) {

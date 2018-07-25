@@ -118,83 +118,121 @@ void ScaleLayer<Dtype>::Forward_cpu(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   const Dtype* bottom_data = bottom[0]->cpu_data();
   if (bottom[0] == top[0]) {
-    // In-place computation; need to store bottom data before overwriting it.
-    // Note that this is only necessary for Backward; we could skip this if not
-    // doing Backward, but Caffe currently provides no way of knowing whether
-    // we'll need to do Backward at the time of the Forward call.
+    //  In-place computation; need to store bottom data before overwriting it.
+    //  Note that this is only necessary for Backward; we could skip this if not
+    //  doing Backward, but Caffe currently provides no way of knowing whether
+    //  we'll need to do Backward at the time of the Forward call.
+    //  hhahahah  原来如此啊
+    //  放到临时的空间里面。明白了。
     caffe_copy(bottom[0]->count(), bottom[0]->cpu_data(),
                temp_.mutable_cpu_data());
   }
+
+  // Scale层主要完成 top=alpha∗bottom+betatop=alpha∗bottom+beta的过程，则层中主要有两个参数alphaalpha与betabeta,
+  //求导会比较简单
+
   const Dtype* scale_data =
       ((bottom.size() > 1) ? bottom[1] : this->blobs_[0].get())->cpu_data();
   Dtype* top_data = top[0]->mutable_cpu_data();
-  for (int n = 0; n < outer_dim_; ++n) {
-    for (int d = 0; d < scale_dim_; ++d) {
-      const Dtype factor = scale_data[d];
+  //
+  for (int n = 0; n < outer_dim_; ++n)          //   N
+  {
+    for (int d = 0; d < scale_dim_; ++d)        //   C
+    {
+      //  每一个通道分别有一个对应的值。
+      //  每一个通道一个值。
+      const Dtype factor = scale_data[d];      //  
       caffe_cpu_scale(inner_dim_, factor, bottom_data, top_data);
       bottom_data += inner_dim_;
       top_data += inner_dim_;
     }
   }
-  if (bias_layer_) {
+  if (bias_layer_) 
+  {
     bias_layer_->Forward(bias_bottom_vec_, top);
   }
 }
 
 template <typename Dtype>
 void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
-    const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-  if (bias_layer_ &&
-      this->param_propagate_down_[this->param_propagate_down_.size() - 1]) {
-    bias_layer_->Backward(top, bias_propagate_down_, bias_bottom_vec_);
+    const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) 
+  {
+     if (bias_layer_ && this->param_propagate_down_[this->param_propagate_down_.size() - 1]) {
+          bias_layer_->Backward(top, bias_propagate_down_, bias_bottom_vec_);
   }
   const bool scale_param = (bottom.size() == 1);
   Blob<Dtype>* scale = scale_param ? this->blobs_[0].get() : bottom[1];
-  if ((!scale_param && propagate_down[1]) ||
-      (scale_param && this->param_propagate_down_[0])) {
+  if ((!scale_param && propagate_down[1]) ||(scale_param && this->param_propagate_down_[0])) {
     const Dtype* top_diff = top[0]->cpu_diff();
+    //   是不是原地操作指针是不是相等
     const bool in_place = (bottom[0] == top[0]);
+    //   那么 存在temp 里面
+    LOG(INFO)<<"in_place"<<in_place;
     const Dtype* bottom_data = (in_place ? &temp_ : bottom[0])->cpu_data();
     // Hack: store big eltwise product in bottom[0] diff, except in the special
     // case where this layer itself does the eltwise product, in which case we
     // can store it directly in the scale diff, and we're done.
     // If we're computing in-place (and not doing eltwise computation), this
     // hack doesn't work and we store the product in temp_.
+    //LOG()
     const bool is_eltwise = (bottom[0]->count() == scale->count());
+    LOG(INFO)<<"is_eltwise"<<is_eltwise;
+
     Dtype* product = (is_eltwise ? scale->mutable_cpu_diff() :
-        (in_place ? temp_.mutable_cpu_data() : bottom[0]->mutable_cpu_diff()));
+        (in_place ? temp_.mutable_cpu_data() : bottom[0]->mutable_cpu_diff())); 
+
     caffe_mul(top[0]->count(), top_diff, bottom_data, product);
-    if (!is_eltwise) {
+    if (!is_eltwise) 
+    {
       Dtype* sum_result = NULL;
-      if (inner_dim_ == 1) {
+      if (inner_dim_ == 1) 
+      {
         sum_result = product;
-      } else if (sum_result_.count() == 1) {
+      } 
+      else if (sum_result_.count() == 1) 
+      {
         const Dtype* sum_mult = sum_multiplier_.cpu_data();
         Dtype* scale_diff = scale->mutable_cpu_diff();
-        if (scale_param) {
+        if (scale_param) 
+        {
           Dtype result = caffe_cpu_dot(inner_dim_, product, sum_mult);
           *scale_diff += result;
-        } else {
+        } else 
+        {
           *scale_diff = caffe_cpu_dot(inner_dim_, product, sum_mult);
         }
-      } else {
+      } 
+      else 
+      {
         const Dtype* sum_mult = sum_multiplier_.cpu_data();
         sum_result = (outer_dim_ == 1) ?
             scale->mutable_cpu_diff() : sum_result_.mutable_cpu_data();
         caffe_cpu_gemv(CblasNoTrans, sum_result_.count(), inner_dim_,
                        Dtype(1), product, sum_mult, Dtype(0), sum_result);
       }
-      if (outer_dim_ != 1) {
+      //  如果是多张图片
+      if (outer_dim_ != 1) 
+      {
+        //   
         const Dtype* sum_mult = sum_multiplier_.cpu_data();
+        //    A的梯度   
         Dtype* scale_diff = scale->mutable_cpu_diff();
-        if (scale_dim_ == 1) {
-          if (scale_param) {
+        //    如果A是一个常数  
+        if (scale_dim_ == 1) 
+        {
+          if (scale_param) 
+          {
             Dtype result = caffe_cpu_dot(outer_dim_, sum_mult, sum_result);
             *scale_diff += result;
-          } else {
+          } 
+          else 
+          {
+            //  那么就是
             *scale_diff = caffe_cpu_dot(outer_dim_, sum_mult, sum_result);
           }
-        } else {
+        } 
+        else 
+        {
           caffe_cpu_gemv(CblasTrans, outer_dim_, scale_dim_,
                          Dtype(1), sum_result, sum_mult, Dtype(scale_param),
                          scale_diff);
@@ -202,15 +240,23 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       }
     }
   }
-  if (propagate_down[0]) {
+  //  并行的机会又来了
+  if (propagate_down[0]) 
+  {
     const Dtype* top_diff = top[0]->cpu_diff();
     const Dtype* scale_data = scale->cpu_data();
     Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();
-    for (int n = 0; n < outer_dim_; ++n) {
-      for (int d = 0; d < scale_dim_; ++d) {
+    for (int n = 0; n < outer_dim_; ++n) 
+    {
+      for (int d = 0; d < scale_dim_; ++d) 
+      {
         const Dtype factor = scale_data[d];
+        //   factor 是一个标量。
+        //   也就是每一个通道的标量乘以对应的factor就是bottom的梯度
         caffe_cpu_scale(inner_dim_, factor, top_diff, bottom_diff);
+        //     
         bottom_diff += inner_dim_;
+        //    
         top_diff += inner_dim_;
       }
     }

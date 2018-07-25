@@ -43,6 +43,12 @@ class BatchNormLayer : public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+  virtual void LayerSetUp1(
+      const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t*  handle,
+      cudaStream_t*   stream);
+
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
@@ -66,11 +72,16 @@ class BatchNormLayer : public Layer<Dtype> {
   int channels_;
   Dtype eps_;
 
-  // extra temporarary variables is used to carry out sums/broadcasting
-  // using BLAS
+  //   extra temporarary variables is used to carry out sums/broadcasting
+  //   using BLAS
   Blob<Dtype> batch_sum_multiplier_;
   Blob<Dtype> num_by_chans_;
   Blob<Dtype> spatial_sum_multiplier_;
+  //    增加了流的支持的。
+  //   
+   cudaStream_t*     stream;
+   cublasHandle_t*   handle_;
+
 };
 
 }  // namespace caffe
