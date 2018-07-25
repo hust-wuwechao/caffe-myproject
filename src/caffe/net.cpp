@@ -1019,12 +1019,12 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
      std::string  name_11=layer_names_[i];
      int  pos;
      //如果是split 层的话，同样需要计算完了之前同步一下。
-    if(name_11.find("split")!=-1||layers_[layer_id]->type()=="Eltwise")
+    if(name_11.find("split")!=-1||layers_[i]->type()=="Eltwise")
     {
        //流进行同步。    
        for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
        {
-          cudaStreamSynchronize(stream_[g])
+          cudaStreamSynchronize(stream_[g]);
        }
     }
     //  返回损失。
