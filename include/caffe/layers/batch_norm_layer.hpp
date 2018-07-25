@@ -79,7 +79,7 @@ class BatchNormLayer : public Layer<Dtype> {
   Blob<Dtype> spatial_sum_multiplier_;
   //    增加了流的支持的。
   //   
-   cudaStream_t*     stream;
+   cudaStream_t*     stream_;
    cublasHandle_t*   handle_;
 
 };
