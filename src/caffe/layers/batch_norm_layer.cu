@@ -105,16 +105,16 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   int spatial_dim = bottom[0]->count()/(channels_*bottom[0]->shape(0));
   if (bottom[0] != top[0]) 
   {
-    caffe_copy(bottom[0]->count(), bottom_data, top_data,stream_[0]);
+    caffe_copy1(bottom[0]->count(), bottom_data, top_data,stream_[0]);
   }
   if (use_global_stats_) 
   {
     // use the stored mean/variance estimates.
     const Dtype scale_factor = this->blobs_[2]->cpu_data()[0] == 0 ?
         0 : 1 / this->blobs_[2]->cpu_data()[0];
-    caffe_gpu_scale(variance_.count(), scale_factor,
+    caffe_gpu_scale1(variance_.count(), scale_factor,
         this->blobs_[0]->gpu_data(), mean_.mutable_gpu_data(),handle_[0]);
-    caffe_gpu_scale(variance_.count(), scale_factor,
+    caffe_gpu_scale1(variance_.count(), scale_factor,
         this->blobs_[1]->gpu_data(), variance_.mutable_gpu_data(),handle_[0]);
   } 
   else 
