@@ -133,7 +133,8 @@ void caffe_gpu_gemv1<float>(const CBLAS_TRANSPOSE TransA, const int M,
 
 template <>
 void caffe_gpu_axpy<float>(const int N, const float alpha, const float* X,
-    float* Y,) {
+    float* Y) 
+    {
   CUBLAS_CHECK(cublasSaxpy(Caffe::cublas_handle(), N, &alpha, X, 1, Y, 1));
 }
 
