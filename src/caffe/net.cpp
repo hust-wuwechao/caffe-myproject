@@ -527,7 +527,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       }
       // After this layer is connected, set it up.
       //  这里面是原始的版本。正对于VGG有效
-      if( layers_[layer_id]->type()=="Convolution"||
+     if( layers_[layer_id]->type()=="Convolution"||
           layers_[layer_id]->type()=="ReLU"||
           layers_[layer_id]->type()=="Pooling"||
           layers_[layer_id]->type()=="InnerProduct"||
@@ -535,7 +535,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           layers_[layer_id]->type()=="SoftmaxWithLoss"||
           layers_[layer_id]->type()=="Softmax"||
           layers_[layer_id]->type()=="LRN"
-      )
+          layers_[layer_id]->type()==" BatchNorm"
+          layers_[layer_id]->type()=="Scale"
+       ) 
       {
          //  对于resnet 不同的网络采用不同的选择
          //  这里面采用正则化匹配的方式
