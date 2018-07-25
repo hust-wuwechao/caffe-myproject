@@ -416,7 +416,7 @@ void Net<Dtype>::Init_back_VGG(const NetParameter& in_param)
 }
 
 
-
+template <typename Dtype>
 void Net<Dtype>::Init(const NetParameter& in_param)
 {    
   int priority_low;

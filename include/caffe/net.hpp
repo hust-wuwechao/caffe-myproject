@@ -32,7 +32,7 @@ class Net
 
   /// @brief Initialize a network with a NetParameter.
   void Init(const NetParameter& param);
-
+  
 
 
   /**
