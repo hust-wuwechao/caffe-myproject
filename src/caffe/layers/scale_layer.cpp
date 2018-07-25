@@ -180,14 +180,14 @@ void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const bool is_eltwise = (bottom[0]->count() == scale->count());
     LOG(INFO)<<"is_eltwise"<<is_eltwise;
 
-    Dtype* product = (is_eltwise ? scale->mutable_cpu_diff() :
+      Dtype* product = (is_eltwise ? scale->mutable_cpu_diff() :
         (in_place ? temp_.mutable_cpu_data() : bottom[0]->mutable_cpu_diff())); 
-     LOG(INFO<<"inner_dim_"<<inner_dim_;
-      LOG(INFO<<"sum_result_.count()"<<sum_result_.count();
-       LOG(INFO<<"scale_param"<<scale_param;
-        LOG(INFO<<"outer_dim_"<<outer_dim_;
-         LOG(INFO<<"bottom.size()"<<bottom.size();
-          LOG(INFO<<"bottom[0]"<<bottom[1].shape_string();
+         LOG(INFO)<<"inner_dim_"<<inner_dim_;
+         LOG(INFO)<<"sum_result_.count()"<<sum_result_.count();
+         LOG(INFO)<<"scale_param"<<scale_param;
+          LOG(INFO)<<"outer_dim_"<<outer_dim_;
+          LOG(INFO)<<"bottom.size()"<<bottom.size();
+          LOG(INFO)<<"bottom[0]"<<bottom[1].shape_string();
            //LOG(INFO<<""<<inner_dim_;
     caffe_mul(top[0]->count(), top_diff, bottom_data, product);
     if (!is_eltwise) 
