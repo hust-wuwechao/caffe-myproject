@@ -135,7 +135,7 @@ void ScaleLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           Dtype* scale_diff = scale->mutable_gpu_diff();
           caffe_gpu_gemv1(CblasTrans, outer_dim_, scale_dim_,
                          Dtype(1), sum_result, sum_mult, Dtype(scale_param),
-                         scale_diff,&handle[1]);
+                         scale_diff,&handle_[1]);
         }
       }
     }
@@ -147,7 +147,7 @@ void ScaleLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const Dtype* scale_data = scale->gpu_data();
     Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
     ScaleForward<Dtype>  // NOLINT_NEXT_LINE(whitespace/operators)
-        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS，0，stream_[0]>>>(
+        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
         count, top_diff, scale_data, scale_dim_, inner_dim_, bottom_diff);
   }
 }
