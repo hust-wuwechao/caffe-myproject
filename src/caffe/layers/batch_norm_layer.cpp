@@ -5,7 +5,7 @@
 #include "caffe/util/math_functions.hpp"
 
 namespace caffe {
-#define CUDNN_STREAMS_PER_GROUP 1
+#define CUDNN_STREAMS_PER_GROUP 3
 #define GROUP 1
 template <typename Dtype>
 void BatchNormLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
@@ -71,7 +71,7 @@ void BatchNormLayer<Dtype>::LayerSetUp1(
   //  所以我们改成了1.
   stream_=stream;
   handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
-  for(int i=0;i<1;i++)
+  for(int i=0;i<3;i++)
   {
     cublasCreate(&handle_[i]);
     cublasSetStream(handle_[i],  stream_[i]);
