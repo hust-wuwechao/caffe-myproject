@@ -76,7 +76,7 @@ class Layer {
    void SetUp(const vector<Blob<Dtype>*>& bottom,
               const vector<Blob<Dtype>*>& top,
               cudnnHandle_t*  handle, 
-              cudaStream_t*  stream) 
+              cudaStream_t*   stream) 
   {
     CheckBlobCounts(bottom, top);
     LayerSetUp1(bottom,top,handle,stream);
