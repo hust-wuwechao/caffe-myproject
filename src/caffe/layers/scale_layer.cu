@@ -40,6 +40,8 @@ void ScaleLayer<Dtype>::Forward_gpu(
     // Note that this is only necessary for Backward; we could skip this if not
     // doing Backward, but Caffe currently provides no way of knowing whether
     // we'll need to do Backward at the time of the Forward call.
+    // 是进行原地计算，所以需要等待期完成之后。
+    // 目前是同步的复制，我们看下一按能不能加入到流里面去
     caffe_copy1(bottom[0]->count(), bottom[0]->gpu_data(),
                temp_.mutable_gpu_data(),stream_[0]);
   }
@@ -47,7 +49,8 @@ void ScaleLayer<Dtype>::Forward_gpu(
       ((bottom.size() > 1) ? bottom[1] : this->blobs_[0].get())->gpu_data();
   Dtype* top_data = top[0]->mutable_gpu_data();
   if (bias_layer_) 
-  {
+  { 
+    // 同样加入到了流里面
     const Dtype* bias_data = this->blobs_[bias_param_id_]->gpu_data();
     ScaleBiasForward<Dtype>    // NOLINT_NEXT_LINE(whitespace/operators)
         <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(
@@ -66,8 +69,12 @@ template <typename Dtype>
 void ScaleLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) 
 {
-  if (bias_layer_ &&
-      this->param_propagate_down_[this->param_propagate_down_.size() - 1]) {
+  //  这里面还是需要嵌套使用bias_layer_
+  //   有变数层且blas层需要进行反向计算。
+  //   我们直接改表示层的
+  if (bias_layer_ &&this->param_propagate_down_[this->param_propagate_down_.size() - 1]) 
+  {
+    // 需要先进行反向计算的过程。
     bias_layer_->Backward(top, bias_propagate_down_, bias_bottom_vec_);
   }
   const bool scale_param = (bottom.size() == 1);
@@ -100,14 +107,17 @@ void ScaleLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         } else {
           caffe_gpu_dot(inner_dim_, product, sum_mult, scale_diff);
         }
-      } else {
+      } 
+      else 
+      {
         const Dtype* sum_mult = sum_multiplier_.gpu_data();
         sum_result = (outer_dim_ == 1) ?
             scale->mutable_gpu_diff() : sum_result_.mutable_gpu_data();
-        caffe_gpu_gemv(CblasNoTrans, sum_result_.count(), inner_dim_,
-                       Dtype(1), product, sum_mult, Dtype(0), sum_result);
+        caffe_gpu_gemv1(CblasNoTrans, sum_result_.count(), inner_dim_,
+                       Dtype(1), product, sum_mult, Dtype(0), sum_result,handle_[1]);
       }
-      if (outer_dim_ != 1) {
+      if (outer_dim_ != 1) 
+      {
         const Dtype* sum_mult = sum_multiplier_.gpu_data();
         if (scale_dim_ == 1) {
           Dtype* scale_diff = scale->mutable_cpu_diff();
@@ -118,22 +128,26 @@ void ScaleLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           } else {
             caffe_gpu_dot(outer_dim_, sum_mult, sum_result, scale_diff);
           }
-        } else {
+        } 
+        else 
+        {
+          //  对于参数进行
           Dtype* scale_diff = scale->mutable_gpu_diff();
-          caffe_gpu_gemv(CblasTrans, outer_dim_, scale_dim_,
+          caffe_gpu_gemv1(CblasTrans, outer_dim_, scale_dim_,
                          Dtype(1), sum_result, sum_mult, Dtype(scale_param),
-                         scale_diff);
+                         scale_diff,&handle[1]);
         }
       }
     }
   }
-  if (propagate_down[0]) {
+  if (propagate_down[0]) // 如果激活之的需要计算
+  {
     const int count = top[0]->count();
     const Dtype* top_diff = top[0]->gpu_diff();
     const Dtype* scale_data = scale->gpu_data();
     Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
     ScaleForward<Dtype>  // NOLINT_NEXT_LINE(whitespace/operators)
-        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS>>>(
+        <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS，0，stream_[0]>>>(
         count, top_diff, scale_data, scale_dim_, inner_dim_, bottom_diff);
   }
 }

@@ -99,19 +99,31 @@ template <typename Dtype>
 void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) 
 {
+  //  所有的计算都放到了第一个流里面。
   const Dtype* bottom_data = bottom[0]->gpu_data();
+
   Dtype* top_data = top[0]->mutable_gpu_data();
+   // N
   int num = bottom[0]->shape(0);
+  // H*W
   int spatial_dim = bottom[0]->count()/(channels_*bottom[0]->shape(0));
+  // 不是原地操作？
   if (bottom[0] != top[0]) 
   {
+    // 进行GPU内存之间的copy
+    // bottom_data, top_data复制大top 上面去
     caffe_copy1(bottom[0]->count(), bottom_data, top_data,stream_[0]);
   }
   if (use_global_stats_) 
   {
     // use the stored mean/variance estimates.
+    // 使用存储的值代替
     const Dtype scale_factor = this->blobs_[2]->cpu_data()[0] == 0 ?
         0 : 1 / this->blobs_[2]->cpu_data()[0];
+    //拓展
+    //
+    //
+    //  
     caffe_gpu_scale1(variance_.count(), scale_factor,
         this->blobs_[0]->gpu_data(), mean_.mutable_gpu_data(),handle_[0]);
     caffe_gpu_scale1(variance_.count(), scale_factor,
@@ -151,6 +163,7 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
         variance_.mutable_gpu_data(),handle_[0]);  // E((X_EX)^2)
 
     // compute and save moving average
+    // 
     this->blobs_[2]->mutable_cpu_data()[0] *= moving_average_fraction_;
     this->blobs_[2]->mutable_cpu_data()[0] += 1;
     ////  blob_[0] = mean_ + moving_average_fraction_* blob_[0]; 
@@ -188,6 +201,9 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   caffe_copy1(x_norm_.count(), top_data,
       x_norm_.mutable_gpu_data(),stream_[0]);
 } 
+
+
+
 
 /* 
 template <typename Dtype>
@@ -274,18 +290,23 @@ void BatchNormLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<Blob<Dtype>*>& bottom) 
 {
   const Dtype* top_diff;
-  if (bottom[0] != top[0]) {
+  if (bottom[0] != top[0]) 
+  {
     top_diff = top[0]->gpu_diff();
-  } else {
+  } 
+  else 
+  {
     caffe_copy1(x_norm_.count(), top[0]->gpu_diff(), x_norm_.mutable_gpu_diff(),stream_[0]);
     //   保证这里面完成才能够执行后面的。
     //   添加事件的依赖吧。
-    //   
+    //   这确实是一个问题哈
     top_diff = x_norm_.gpu_diff();
   }
-  
   Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
-  if (use_global_stats_) {
+
+  if (use_global_stats_) 
+  {
+    // 
     caffe_gpu_div1(temp_.count(), top_diff, temp_.gpu_data(), bottom_diff,stream_[0]);
     return;
   }
@@ -303,6 +324,8 @@ void BatchNormLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   // along all dimensions except the channels dimension.  In the above
   // equation, the operations allow for expansion (i.e. broadcast) along all
   // dimensions except the channels dimension where required.
+
+
 
   // sum(dE/dY \cdot Y)
   caffe_gpu_mul1(temp_.count(), top_data, top_diff, bottom_diff,stream_[0]);

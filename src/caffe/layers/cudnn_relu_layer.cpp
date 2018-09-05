@@ -24,7 +24,7 @@ template <typename Dtype>
 void CuDNNReLULayer<Dtype>::LayerSetUp1(
     const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top,
-    cudnnHandle_t* handle ,
+    cudnnHandle_t* handle,
     cudaStream_t*  stream) 
  {
 

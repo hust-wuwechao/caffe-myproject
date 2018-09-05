@@ -1,6 +1,7 @@
 /**
  * @brief A layer factory that allows one to register layers.
- * During runtime, registered layers can be called by passing a LayerParameter
+ * During runtime, registered layers can be called by 
+ * passing a LayerParameter
  * protobuffer to the CreateLayer function:
  *
  *     LayerRegistry<Dtype>::CreateLayer(param);
@@ -58,7 +59,8 @@ class LayerRegistry {
   typedef shared_ptr<Layer<Dtype> > (*Creator)(const LayerParameter&);
   typedef std::map<string, Creator> CreatorRegistry;
 
-  static CreatorRegistry& Registry() {
+  static CreatorRegistry& Registry() 
+  {
     static CreatorRegistry* g_registry_ = new CreatorRegistry();
     return *g_registry_;
   }

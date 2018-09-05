@@ -128,6 +128,7 @@ void CuDNNDeconvolutionLayer<Dtype>::Backward_gpu(
     // Synchronize the work across groups, each of which went into its own
     // stream, by launching an empty kernel into the default (null) stream.
     // NOLINT_NEXT_LINE(whitespace/operators)
+    // 目前还是加了同步的过程在里面
     sync_deconv_groups<<<1, 1>>>();
   }
 }

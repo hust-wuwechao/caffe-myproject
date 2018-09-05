@@ -122,13 +122,13 @@ class Solver {
   // that it wants a snapshot saved and/or to exit early.
   ActionCallback action_request_function_;
 
+
   // True iff a request to stop early was received.
   bool requested_early_exit_;
 
   // Timing information, handy to tune e.g. nbr of GPUs
   Timer iteration_timer_;
   float iterations_last_;
-
   DISABLE_COPY_AND_ASSIGN(Solver);
 };
 

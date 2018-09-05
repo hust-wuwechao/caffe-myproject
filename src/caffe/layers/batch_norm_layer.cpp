@@ -67,7 +67,7 @@ void BatchNormLayer<Dtype>::LayerSetUp1(
       cudaStream_t*   stream) 
 {
 
-  //  默认初始化3个handle。其实这里面只需要一个
+  //  默认初始化3个handle。 其实这里面只需要一个
   //  所以我们改成了1.
   stream_=stream;
   handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
@@ -316,7 +316,7 @@ void BatchNormLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
         int num = bottom[0]->shape(0);
         //  H*W
         int spatial_dim = bottom[0]->count()/(bottom[0]->shape(0)*channels_);
-        //
+        //  如果不是原地计算
         if (bottom[0] != top[0]) 
         {
             caffe_copy(bottom[0]->count(), bottom_data, top_data);
@@ -402,6 +402,7 @@ void BatchNormLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     {
         // compute variance using var(X) = E((X-EX)^2)
         //  对于每一个的差值去取平方
+
         caffe_sqr<Dtype>(top[0]->count(), top_data,temp_.mutable_cpu_data());  // (X-EX)^2
         //  得到每一个每一个样本每一个通道的误平方和。
         //  NC *1 
@@ -430,15 +431,18 @@ void BatchNormLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 
 
 
-        // normalize variance
-        // 给梯度每一个元素加上一个常量，防止除数为0
+        //   normalize variance
+        //   给梯度每一个元素加上一个常量，防止除数为0
+        //   由于梯度本身是C*1
         caffe_add_scalar(variance_.count(), eps_, variance_.mutable_cpu_data());
-        // 开方
+        //    对于梯度进行开方
+        //    
         caffe_sqrt(variance_.count(), variance_.cpu_data(),
                     variance_.mutable_cpu_data());
 
-        // replicate variance to input size
-        // 方差扩张为NC
+        //  replicate variance to input size
+        //  方差由 c*1-扩张为NC
+        //  
         caffe_cpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, num, channels_, 1, 1,
             batch_sum_multiplier_.cpu_data(), variance_.cpu_data(), 0.,
             num_by_chans_.mutable_cpu_data());
@@ -447,6 +451,7 @@ void BatchNormLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
             spatial_dim, 1, 1., num_by_chans_.cpu_data(),
             spatial_sum_multiplier_.cpu_data(), 0., temp_.mutable_cpu_data());
         //   逐个元素相除
+        //  
         caffe_div(temp_.count(), top_data, temp_.cpu_data(), top_data);
         // TODO(cdoersch): The caching is only needed because later in-place layers
         // might clobber the data.  Can we skip this if they won't?

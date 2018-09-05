@@ -40,16 +40,15 @@ void InternalThread::StartInternalThread() {
 }
 
 void InternalThread::entry(int device, Caffe::Brew mode, int rand_seed,
-    int solver_count, int solver_rank, bool multiprocess) {
-#ifndef CPU_ONLY
+int solver_count, int solver_rank, bool multiprocess) {
+  #ifndef CPU_ONLY
   CUDA_CHECK(cudaSetDevice(device));
-#endif
+  #endif
   Caffe::set_mode(mode);
   Caffe::set_random_seed(rand_seed);
   Caffe::set_solver_count(solver_count);
   Caffe::set_solver_rank(solver_rank);
   Caffe::set_multiprocess(multiprocess);
-
   InternalThreadEntry();
 }
 

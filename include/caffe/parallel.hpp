@@ -23,8 +23,10 @@ namespace caffe {
 // Represents a net parameters. Once a net is created, its parameter buffers can
 // be replaced by ones from Params, to allow parallelization. Params ensures
 // parameters are allocated in one consecutive array.
+// 参数的定义问题。
 template<typename Dtype>
-class Params {
+class Params
+ {
  public:
   explicit Params(shared_ptr<Solver<Dtype> > root_solver);
   virtual ~Params() {
@@ -48,7 +50,8 @@ class Params {
 DISABLE_COPY_AND_ASSIGN(Params);
 };
 
-// Params stored in GPU memory.
+//  Params stored in GPU memory.
+//  GPU 端的参数问题。
 template<typename Dtype>
 class GPUParams : public Params<Dtype> {
  public:
@@ -63,10 +66,13 @@ class GPUParams : public Params<Dtype> {
   using Params<Dtype>::diff_;
 };
 
+
+
 template<typename Dtype>
 class NCCL : public GPUParams<Dtype>,
              public Solver<Dtype>::Callback,
-             public Net<Dtype>::Callback {
+             public Net<Dtype>::Callback 
+{
  public:
   /**
    * Single process version.
@@ -80,6 +86,7 @@ class NCCL : public GPUParams<Dtype>,
   ~NCCL();
 
   boost::barrier* barrier();
+  
   void set_barrier(boost::barrier* value);
 
   /**

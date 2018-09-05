@@ -47,6 +47,7 @@ class CuDNNReLULayer : public ReLULayer<Dtype> {
 
   bool handles_setup_;
   //cudnnHandle_t    handle_;
+  // 也就是说会有多个handle的话
   cudnnHandle_t* handle_;
   cudaStream_t*  stream_;
 

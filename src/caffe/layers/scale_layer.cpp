@@ -7,7 +7,7 @@
 #include "caffe/util/math_functions.hpp"
 
 namespace caffe {
-#define CUDNN_STREAMS_PER_GROUP 1
+#define CUDNN_STREAMS_PER_GROUP 3
 #define GROUP 1
 template <typename Dtype>
 void ScaleLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
@@ -82,7 +82,12 @@ void ScaleLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
   const ScaleParameter& param = this->layer_param_.scale_param();
   stream_=stream;
   handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
-  for(int i=0;i<1;i++)
+  // 自己创建handle
+  // 并且和和流进行绑定
+  // 我们仍然创建3个。
+  // 其中第一个为优先级最高
+  // 第二，3个问优先级最低
+  for(int i=0;i<3;i++)
   {
     cublasCreate(&handle_[i]);
     cublasSetStream(handle_[i],  stream_[i]);
@@ -127,21 +132,28 @@ void ScaleLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     bias_param->set_axis(param.axis());
     if (bottom.size() > 1) {
       bias_param->set_num_axes(bottom[1]->num_axes());
-    } else {
+    } 
+    else 
+    {
       bias_param->set_num_axes(param.num_axes());
     }
     bias_param->mutable_filler()->CopyFrom(param.bias_filler());
     bias_layer_ = LayerRegistry<Dtype>::CreateLayer(layer_param);
     bias_bottom_vec_.resize(1);
     bias_bottom_vec_[0] = bottom[0];
-    bias_layer_->SetUp(bias_bottom_vec_, top);
+    // 这里面进行修改。我们bias的层传入哦们需要的结果。
+    // 我们把bias 里面的需要的留传我们的需要的流。看一下结果。
+
+    bias_layer_->SetUp1(bias_bottom_vec_, top,stream,handle);
     if (this->blobs_.size() + bottom.size() < 3) {
       // case: blobs.size == 1 && bottom.size == 1
       // or blobs.size == 0 && bottom.size == 2
       bias_param_id_ = this->blobs_.size();
       this->blobs_.resize(bias_param_id_ + 1);
       this->blobs_[bias_param_id_] = bias_layer_->blobs()[0];
-    } else {
+    } 
+    else 
+    {
       // bias param already initialized
       bias_param_id_ = this->blobs_.size() - 1;
       bias_layer_->blobs()[0] = this->blobs_[bias_param_id_];
@@ -205,6 +217,7 @@ void ScaleLayer<Dtype>::Forward_cpu(
     //  we'll need to do Backward at the time of the Forward call.
     //  hhahahah  原来如此啊
     //  放到临时的空间里面。明白了。
+    //   这里面又是完全浪费空间的哈
     caffe_copy(bottom[0]->count(), bottom[0]->cpu_data(),
                temp_.mutable_cpu_data());
   }
@@ -222,6 +235,9 @@ void ScaleLayer<Dtype>::Forward_cpu(
     {
       //  每一个通道分别有一个对应的值。
       //  每一个通道一个值。
+      //  每一个通道衬衣通道对应的参数值哈
+      //  一个通道只有对应一个值
+      //   所以参数的规模是C*1
       const Dtype factor = scale_data[d];      //  
       caffe_cpu_scale(inner_dim_, factor, bottom_data, top_data);
       bottom_data += inner_dim_;
@@ -230,6 +246,9 @@ void ScaleLayer<Dtype>::Forward_cpu(
   }
   if (bias_layer_) 
   {
+    // 注意这里面调用了bias_layer_
+    // 也就是每一个通道一个数值，不是乘以而是加上。
+    // 这一层的top值自己输入的作为的bottom的值
     bias_layer_->Forward(bias_bottom_vec_, top);
   }
 }

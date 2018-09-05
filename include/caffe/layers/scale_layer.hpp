@@ -29,10 +29,11 @@ class ScaleLayer: public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
-   virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+  virtual void LayerSetUp1(
+      const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
-      cudaStream_t*    stream,
-      cublasHandle_t*  handle);
+      cudaStream_t*      stream,
+      cublasHandle_t*    handle);
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
