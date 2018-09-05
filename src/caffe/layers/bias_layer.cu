@@ -75,7 +75,11 @@ void BiasLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     {
       // 对每一张图片进行scale的计算
       caffe_gpu_gemv1(CblasNoTrans, bias_dim_, inner_dim_, Dtype(1),
-          top_diff, bias_multiplier_.gpu_data(), Dtype(accum), bias_diff, &handle_[1]);
+          top_diff, 
+          bias_multiplier_.gpu_data(),
+          Dtype(accum), 
+          bias_diff, 
+          &handle_[1]);
       top_diff += dim_;
       accum = true;
     }

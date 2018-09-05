@@ -5,7 +5,7 @@
 #include "caffe/util/math_functions.hpp"
 
 namespace caffe {
-#define CUDNN_STREAMS_PER_GROUP 1
+#define CUDNN_STREAMS_PER_GROUP 3
 #define GROUP 1
 template <typename Dtype>
 void BiasLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
