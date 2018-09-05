@@ -21,12 +21,13 @@ namespace caffe {
 template <typename Dtype>
 class BiasLayer : public Layer<Dtype> {
  public:
-  explicit BiasLayer(const LayerParameter& param)
+   explicit BiasLayer(const LayerParameter& param)
       : Layer<Dtype>(param) {}
-  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      
+   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
- 
- virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+   
+   virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
       cudaStream_t*      stream,
       cublasHandle_t*    handle

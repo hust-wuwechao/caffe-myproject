@@ -37,11 +37,11 @@ void BiasLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   this->param_propagate_down_.resize(this->blobs_.size(), true);
 }
 
-
+template <typename Dtype>
 void BiasLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
       cudnnHandle_t* handle,
-      cudaStream_t* stream) 
+      cudaStream_t*  stream) 
 {
 
   stream_=stream;
