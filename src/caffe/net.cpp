@@ -537,9 +537,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           layers_[layer_id]->type()=="Dropout"||
           layers_[layer_id]->type()=="SoftmaxWithLoss"||
           layers_[layer_id]->type()=="Softmax"||
-          layers_[layer_id]->type()=="LRN"    ||
-          layers_[layer_id]->type()==" BatchNorm"||
-          layers_[layer_id]->type()=="Scale" 
+          layers_[layer_id]->type()=="LRN"    //||
+          //layers_[layer_id]->type()==" BatchNorm"||
+          //layers_[layer_id]->type()=="Scale" 
       
        ) 
       {
