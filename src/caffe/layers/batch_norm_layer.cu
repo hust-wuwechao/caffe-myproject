@@ -112,7 +112,7 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   {
     // 进行GPU内存之间的copy
     // bottom_data, top_data复制大top 上面去
-    caffe_copy1(bottom[0]->count(), bottom_data, top_data,stream_[0]);
+    caffe_copy1(bottom[0]->count(), bottom_data, top_data,&stream_[0]);
   }
   if (use_global_stats_) 
   {
@@ -125,9 +125,9 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     //
     //  
     caffe_gpu_scale1(variance_.count(), scale_factor,
-        this->blobs_[0]->gpu_data(), mean_.mutable_gpu_data(),handle_[0]);
+        this->blobs_[0]->gpu_data(), mean_.mutable_gpu_data(),&handle_[0]);
     caffe_gpu_scale1(variance_.count(), scale_factor,
-        this->blobs_[1]->gpu_data(), variance_.mutable_gpu_data(),handle_[0]);
+        this->blobs_[1]->gpu_data(), variance_.mutable_gpu_data(),&handle_[0]);
   } 
   else 
   {
@@ -135,19 +135,19 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     caffe_gpu_gemv1<Dtype>(CblasNoTrans, channels_ * num, spatial_dim,
         1. / (num * spatial_dim), bottom_data,
         spatial_sum_multiplier_.gpu_data(), 0.,
-        num_by_chans_.mutable_gpu_data(),handle_[0]);
+        num_by_chans_.mutable_gpu_data(),&handle_[0]);
     caffe_gpu_gemv1<Dtype>(CblasTrans, num, channels_, 1.,
         num_by_chans_.gpu_data(), batch_sum_multiplier_.gpu_data(), 0.,
-        mean_.mutable_gpu_data(),handle_[0]);
+        mean_.mutable_gpu_data(),&handle_[0]);
   }
 
   // subtract mean
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, num, channels_, 1, 1,
       batch_sum_multiplier_.gpu_data(), mean_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data(),handle_[0]);
+      num_by_chans_.mutable_gpu_data(),&handle_[0]);
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, channels_ * num,
       spatial_dim, 1, -1, num_by_chans_.gpu_data(),
-      spatial_sum_multiplier_.gpu_data(), 1., top_data,handle_[0]);
+      spatial_sum_multiplier_.gpu_data(), 1., top_data,&handle_[0]);
 
   if (!use_global_stats_) 
   {
@@ -157,10 +157,10 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     caffe_gpu_gemv1<Dtype>(CblasNoTrans, channels_ * num, spatial_dim,
         1. / (num * spatial_dim), temp_.gpu_data(),
         spatial_sum_multiplier_.gpu_data(), 0.,
-        num_by_chans_.mutable_gpu_data(),handle_[0]);
+        num_by_chans_.mutable_gpu_data(),&handle_[0]);
     caffe_gpu_gemv1<Dtype>(CblasTrans, num, channels_, Dtype(1.),
         num_by_chans_.gpu_data(), batch_sum_multiplier_.gpu_data(), Dtype(0.),
-        variance_.mutable_gpu_data(),handle_[0]);  // E((X_EX)^2)
+        variance_.mutable_gpu_data(),&handle_[0]);  // E((X_EX)^2)
 
     // compute and save moving average
     // 
@@ -170,36 +170,36 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     //    功能： 功能：Y= alpha*X+beta*Y
     //     N： 为X和Y中element的个数
     caffe_gpu_axpby1(mean_.count(), Dtype(1), mean_.gpu_data(),
-        moving_average_fraction_, this->blobs_[0]->mutable_gpu_data(),handle_[0]);
+        moving_average_fraction_, this->blobs_[0]->mutable_gpu_data(),&handle_[0]);
     //  blob_[1] = bias_correction_factor * variance_ + moving_average_fraction_ * blob_[1]
     int m = bottom[0]->count()/channels_;
     Dtype bias_correction_factor = m > 1 ? Dtype(m)/(m-1) : 1;
     caffe_gpu_axpby1(variance_.count(), bias_correction_factor,
         variance_.gpu_data(), moving_average_fraction_,
-        this->blobs_[1]->mutable_gpu_data(),handle_[0]);
+        this->blobs_[1]->mutable_gpu_data(),&handle_[0]);
   }
 
   // normalize variance
   caffe_gpu_add_scalar1(variance_.count(), eps_, variance_.mutable_gpu_data(),stream_[0]);
   
   caffe_gpu_sqrt1(variance_.count(), variance_.gpu_data(),
-      variance_.mutable_gpu_data(),stream_[0]);
+      variance_.mutable_gpu_data(),&stream_[0]);
 
   // replicate variance to input size
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, num, channels_, 1, 1,
       batch_sum_multiplier_.gpu_data(), variance_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data(),handle_[0]);
+      num_by_chans_.mutable_gpu_data(),&handle_[0]);
   
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, channels_ * num,
       spatial_dim, 1, 1., num_by_chans_.gpu_data(),
-      spatial_sum_multiplier_.gpu_data(), 0., temp_.mutable_gpu_data(),handle_[0]);
+      spatial_sum_multiplier_.gpu_data(), 0., temp_.mutable_gpu_data(),&handle_[0]);
   
-  caffe_gpu_div1(temp_.count(), top_data, temp_.gpu_data(), top_data,stream_[0]);
+  caffe_gpu_div1(temp_.count(), top_data, temp_.gpu_data(), top_data,&stream_[0]);
   // TODO(cdoersch): The caching is only needed because later in-place layers
   //                 might clobber the data.  Can we skip this if they won't?
   
   caffe_copy1(x_norm_.count(), top_data,
-      x_norm_.mutable_gpu_data(),stream_[0]);
+      x_norm_.mutable_gpu_data(),&stream_[0]);
 } 
 
 
@@ -296,7 +296,7 @@ void BatchNormLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   } 
   else 
   {
-    caffe_copy1(x_norm_.count(), top[0]->gpu_diff(), x_norm_.mutable_gpu_diff(),stream_[0]);
+    caffe_copy1(x_norm_.count(), top[0]->gpu_diff(), x_norm_.mutable_gpu_diff(),&stream_[0]);
     //   保证这里面完成才能够执行后面的。
     //   添加事件的依赖吧。
     //   这确实是一个问题哈
@@ -307,7 +307,7 @@ void BatchNormLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   if (use_global_stats_) 
   {
     // 
-    caffe_gpu_div1(temp_.count(), top_diff, temp_.gpu_data(), bottom_diff,stream_[0]);
+    caffe_gpu_div1(temp_.count(), top_diff, temp_.gpu_data(), bottom_diff,&stream_[0]);
     return;
   }
   const Dtype* top_data = x_norm_.gpu_data();
@@ -331,45 +331,45 @@ void BatchNormLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   caffe_gpu_mul1(temp_.count(), top_data, top_diff, bottom_diff,stream_[0]);
   caffe_gpu_gemv1<Dtype>(CblasNoTrans, channels_ * num, spatial_dim, 1.,
       bottom_diff, spatial_sum_multiplier_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data(),handle_[0]);
+      num_by_chans_.mutable_gpu_data(),&handle_[0]);
   caffe_gpu_gemv1<Dtype>(CblasTrans, num, channels_, 1.,
       num_by_chans_.gpu_data(), batch_sum_multiplier_.gpu_data(), 0.,
-      mean_.mutable_gpu_data(),handle_[0]);
+      mean_.mutable_gpu_data(),&handle_[0]);
 
   // reshape (broadcast) the above
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, num, channels_, 1, 1,
       batch_sum_multiplier_.gpu_data(), mean_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data(),handle_[0]);
+      num_by_chans_.mutable_gpu_data(),&handle_[0]);
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, channels_ * num,
       spatial_dim, 1, 1., num_by_chans_.gpu_data(),
-      spatial_sum_multiplier_.gpu_data(), 0., bottom_diff,handle_[0]);
+      spatial_sum_multiplier_.gpu_data(), 0., bottom_diff,&handle_[0]);
 
   // sum(dE/dY \cdot Y) \cdot Y
-  caffe_gpu_mul1(temp_.count(), top_data, bottom_diff, bottom_diff,stream_[0]);
+  caffe_gpu_mul1(temp_.count(), top_data, bottom_diff, bottom_diff,&stream_[0]);
 
   // sum(dE/dY)-sum(dE/dY \cdot Y) \cdot Y
   caffe_gpu_gemv1<Dtype>(CblasNoTrans, channels_ * num, spatial_dim, 1.,
       top_diff, spatial_sum_multiplier_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data(),handle_[0]);
+      num_by_chans_.mutable_gpu_data(),&handle_[0]);
   caffe_gpu_gemv1<Dtype>(CblasTrans, num, channels_, 1.,
       num_by_chans_.gpu_data(), batch_sum_multiplier_.gpu_data(), 0.,
-      mean_.mutable_gpu_data(),handle_[0]);
+      mean_.mutable_gpu_data(),&handle_[0]);
   // reshape (broadcast) the above to make
   // sum(dE/dY)-sum(dE/dY \cdot Y) \cdot Y
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, num, channels_, 1, 1,
       batch_sum_multiplier_.gpu_data(), mean_.gpu_data(), 0.,
-      num_by_chans_.mutable_gpu_data(),handle_[0]);
+      num_by_chans_.mutable_gpu_data(),&handle_[0]);
   caffe_gpu_gemm1<Dtype>(CblasNoTrans, CblasNoTrans, num * channels_,
       spatial_dim, 1, 1., num_by_chans_.gpu_data(),
-      spatial_sum_multiplier_.gpu_data(), 1., bottom_diff,handle_[0]);
+      spatial_sum_multiplier_.gpu_data(), 1., bottom_diff,&handle_[0]);
 
   // dE/dY - mean(dE/dY)-mean(dE/dY \cdot Y) \cdot Y
   caffe_gpu_axpby1(temp_.count(), Dtype(1), top_diff,
-      Dtype(-1. / (num * spatial_dim)), bottom_diff,handle_[0]);
+      Dtype(-1. / (num * spatial_dim)), bottom_diff,&handle_[0]);
 
   // note: temp_ still contains sqrt(var(X)+eps), computed during the forward
   // pass.
-  caffe_gpu_div1(temp_.count(), bottom_diff, temp_.gpu_data(), bottom_diff,stream_[0]);
+  caffe_gpu_div1(temp_.count(), bottom_diff, temp_.gpu_data(), bottom_diff,&stream_[0]);
 } 
 
 INSTANTIATE_LAYER_GPU_FUNCS(BatchNormLayer);
