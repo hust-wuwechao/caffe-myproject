@@ -66,7 +66,7 @@ void BatchNormLayer<Dtype>::LayerSetUp1(
       cudnnHandle_t*  handle,
       cudaStream_t*   stream) 
 {
-
+ LOG(INFO)<<"进入了batchnor LayerSetUp1";
   //  默认初始化3个handle。 其实这里面只需要一个
   //  所以我们改成了1.
   stream_=stream;

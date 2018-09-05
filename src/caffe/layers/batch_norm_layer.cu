@@ -132,10 +132,15 @@ void BatchNormLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   else 
   {
     // compute mean
-    caffe_gpu_gemv1<Dtype>(CblasNoTrans, channels_ * num, spatial_dim,
-        1. / (num * spatial_dim), bottom_data,
-        spatial_sum_multiplier_.gpu_data(), 0.,
-        num_by_chans_.mutable_gpu_data(),handle_[0]);
+    caffe_gpu_gemv1<Dtype>(CblasNoTrans, 
+        channels_ * num, 
+        spatial_dim,
+        1. / (num * spatial_dim), 
+        bottom_data,
+        spatial_sum_multiplier_.gpu_data(),
+         0.,
+        num_by_chans_.mutable_gpu_data(),
+        handle_[0]);
     caffe_gpu_gemv1<Dtype>(CblasTrans, num, channels_, 1.,
         num_by_chans_.gpu_data(), batch_sum_multiplier_.gpu_data(), 0.,
         mean_.mutable_gpu_data(),handle_[0]);

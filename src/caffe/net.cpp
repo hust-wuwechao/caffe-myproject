@@ -539,7 +539,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           layers_[layer_id]->type()=="Softmax"||
           layers_[layer_id]->type()=="LRN"    ||
           layers_[layer_id]->type()==" BatchNorm"||
-          layers_[layer_id]->type()=="Scale"  
+          layers_[layer_id]->type()=="Scale" 
+      
        ) 
       {
          //  对于resnet 不同的网络采用不同的选择
@@ -556,7 +557,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
            layer_names_[layer_id]=="res5a_branch1"||
            layer_names_[layer_id]=="bn5a_branch1"||
            layer_names_[layer_id]=="scale5a_branch1"
-           )
+          )
           {
               //LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
               LOG_IF(INFO, Caffe::root_solver())
@@ -575,7 +576,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
               layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);
            }
        }  
-      else  //  采用默认的不使用任何的流技术
+      else  //   采用默认的不使用任何的流技术
       {
         
         LOG_IF(INFO, Caffe::root_solver())
