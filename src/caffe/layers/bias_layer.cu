@@ -79,7 +79,7 @@ void BiasLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           bias_multiplier_.gpu_data(),
           Dtype(accum), 
           bias_diff, 
-          &handle_[1]);
+          handle_[1]);
       top_diff += dim_;
       accum = true;
     }
