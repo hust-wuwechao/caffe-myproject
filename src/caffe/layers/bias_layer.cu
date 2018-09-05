@@ -70,7 +70,8 @@ void BiasLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     Dtype* bias_diff = (bias_param ? this->blobs_[0].get() : bottom[1])
         ->mutable_gpu_diff();
     bool accum = bias_param;
-    LOG(INFO)<<"outer_dim_ ======"<<outer_dim_;
+    //、、LOG(INFO)<<"outer_dim_ ======"<<outer_dim_;
+    //in
     for (int n = 0; n < outer_dim_; ++n) 
     {
       // 对每一张图片进行scale的计算
