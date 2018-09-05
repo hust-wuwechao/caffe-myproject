@@ -144,7 +144,7 @@ void ScaleLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     // 这里面进行修改。我们bias的层传入哦们需要的结果。
     // 我们把bias 里面的需要的留传我们的需要的流。看一下结果。
 
-    bias_layer_->SetUp1(bias_bottom_vec_, top,stream,handle);
+    bias_layer_->SetUp(bias_bottom_vec_, top, stream, handle);
     if (this->blobs_.size() + bottom.size() < 3) {
       // case: blobs.size == 1 && bottom.size == 1
       // or blobs.size == 0 && bottom.size == 2
