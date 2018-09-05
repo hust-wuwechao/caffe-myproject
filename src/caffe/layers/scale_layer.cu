@@ -114,7 +114,7 @@ void ScaleLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         sum_result = (outer_dim_ == 1) ?
             scale->mutable_gpu_diff() : sum_result_.mutable_gpu_data();
         caffe_gpu_gemv1(CblasNoTrans, sum_result_.count(), inner_dim_,
-                       Dtype(1), product, sum_mult, Dtype(0), sum_result,handle_[1]);
+                       Dtype(1), product, sum_mult, Dtype(0), sum_result, &handle_[1]);
       }
       if (outer_dim_ != 1) 
       {

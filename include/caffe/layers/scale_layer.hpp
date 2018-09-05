@@ -82,8 +82,9 @@ class ScaleLayer: public Layer<Dtype> {
   Blob<Dtype> temp_;
   int axis_;
   int outer_dim_, scale_dim_, inner_dim_;
-  cudaStream_t*    stream_;
-  cublasHandle_t*  handle_;
+  // 这里面定义了的流
+  cudaStream_t*     stream_;
+  cublasHandle_t*   handle_;
 
 
 };
