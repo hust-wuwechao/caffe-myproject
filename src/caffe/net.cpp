@@ -545,7 +545,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       {
          //  对于resnet 不同的网络采用不同的选择
          //  这里面采用正则化匹配的方式
-         if(layer_names_[layer_id]=="res2a_branch1"||
+         /*if(layer_names_[layer_id]=="res2a_branch1"||
            layer_names_[layer_id]=="bn2a_branch1"||
            layer_names_[layer_id]=="scale2a_branch1"||
            layer_names_[layer_id]=="res3a_branch1"||
@@ -566,7 +566,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
               << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
               layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_+3,stream_+3);
            }
-           else
+           else8
+           */
            {
               //LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
               LOG_IF(INFO, Caffe::root_solver())
