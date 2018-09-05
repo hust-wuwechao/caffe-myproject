@@ -38,10 +38,11 @@ void BiasLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 }
 
 template <typename Dtype>
-void BiasLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+void BiasLayer<Dtype>::LayerSetUp1(
+     const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top,
-      cudnnHandle_t* handle,
-      cudaStream_t* stream) 
+      cudnnHandle_t*  handle,
+      cudaStream_t*   stream) 
 {
 
   stream_=stream;
