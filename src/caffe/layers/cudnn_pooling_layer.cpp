@@ -27,8 +27,8 @@ void CuDNNPoolingLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     cudaStream_t*  stream) 
 {
     
-  //stream_=stream;
-  //handle_=handle;
+  stream_=stream;
+  handle_=handle;
 
   LOG(INFO)<<"进入CuDNNPoolingLayer<Dtype>::LayerSetUp1";
 

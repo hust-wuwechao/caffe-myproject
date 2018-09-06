@@ -47,6 +47,7 @@ void EltwiseLayer<Dtype>::LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
     cublasCreate(&handle_[i]);
     cublasSetStream(handle_[i],stream_[i]);
   }
+  
   CHECK(this->layer_param().eltwise_param().coeff_size() == 0
       || this->layer_param().eltwise_param().coeff_size() == bottom.size()) <<
       "Eltwise Layer takes one coefficient per bottom blob.";
