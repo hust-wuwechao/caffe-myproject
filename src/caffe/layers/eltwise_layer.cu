@@ -55,7 +55,7 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     cudaEvent_t event;
     //  创建
     cudaEventCreate(&event);
-    cudaEventRecord(event,stream_[3])
+    cudaEventRecord(event,stream_[3]);
     cudaStreamWaitEvent(stream_[0],event);
     //  这样完成了流之间的同步的过程。
     //  接下来都是在流1里面完成的。
