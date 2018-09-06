@@ -546,7 +546,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       {     
          string type11=layer_param.name();
           //   处于第一条路径的的。
-         if(type11.find("branch1")!=string::nops)
+         if(type11.find("branch1")>=0)
          {
               LOG_IF(INFO, Caffe::root_solver())
               << "" << layers_[layer_id]->type();
