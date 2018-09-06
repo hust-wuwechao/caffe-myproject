@@ -125,7 +125,7 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         caffe_gpu_mul(count, bottom_diff, top_diff, bottom_diff);
         break;
       case EltwiseParameter_EltwiseOp_SUM:
-      LOG(INFO)<<"在elem wise层  参数为coeffs_[i]"<<coeffs_[i];
+      //LOG(INFO)<<"在elem wise层  参数为coeffs_[i]"<<coeffs_[i];
         if (coeffs_[i] == Dtype(1.)) 
         {
           caffe_copy1(count, top_diff, bottom_diff,stream_[0]);
