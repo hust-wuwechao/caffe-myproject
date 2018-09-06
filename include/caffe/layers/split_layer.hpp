@@ -22,6 +22,10 @@ class SplitLayer : public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,onst vector<Blob<Dtype>*>& top);
+  virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,onst vector<Blob<Dtype>*>& top,
+  cudnnHandle_t* habdle,
+  cudaStream_t* stream);
 
   virtual inline const char* type() const { return "Split"; }
   virtual inline int ExactNumBottomBlobs() const { return 1; }
@@ -34,9 +38,7 @@ class SplitLayer : public Layer<Dtype> {
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
-  virtual void LayerSetUP1(const vector<Blob<Dtype>*>& bottom,onst vector<Blob<Dtype>*>& top,
-  cudnnHandle_t* habdle,
-  cudaStream_t* stream)
+ 
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,

@@ -21,7 +21,7 @@ void SplitLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     cudaEvent_t event;
     //  创建
     cudaEventCreate(&event);
-    cudaEventRecord(event,stream_[0])
+    cudaEventRecord(event,stream_[0]);
     //cudaStreamWaitEvent(stream_[0],event);
     cudaEventSynchronize(event);
     //  这样完成了流之间的同步的过程。
@@ -55,7 +55,7 @@ void SplitLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     cudaEvent_t event;
     //  创建
     cudaEventCreate(&event);
-    cudaEventRecord(event,stream_[3])
+    cudaEventRecord(event,stream_[3]);
     cudaStreamWaitEvent(stream_[0],event);
     //  cudaEventSynchronize(event);
     //  这样完成了流之间的同步的过程。
@@ -69,7 +69,7 @@ void SplitLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   {
     const Dtype* top_diff = top[i]->gpu_diff();
     Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
-    caffe_gpu_axpy1(count_, Dtype(1.), top_diff, bottom_diff，handle_[0]);
+    caffe_gpu_axpy1(count_, Dtype(1.), top_diff, bottom_diff,handle_[0]);
   }
 }
 
