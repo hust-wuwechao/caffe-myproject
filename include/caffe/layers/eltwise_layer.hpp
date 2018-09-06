@@ -47,8 +47,8 @@ class EltwiseLayer : public Layer<Dtype> {
   EltwiseParameter_EltwiseOp op_;
   vector<Dtype> coeffs_;
   Blob<int> max_idx_;
-  cudnnHandle_t*   handle_;
-  cudaStream_t*    stream_;
+  cublasHandle_t*    handle_;
+  cudaStream_t*      stream_;
   bool stable_prod_grad_;
 };
 
