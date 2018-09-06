@@ -518,7 +518,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       // specified fewer than the required number (as specified by
       // ExactNumTopBlobs() or MinTopBlobs()), allocate them here.
       Layer<Dtype>* layer = layers_[layer_id].get();
-      if (layer->AutoTopBlobs()) {
+      if (layer->AutoTopBlobs()) 
+      {
         const int needed_num_top =
             std::max(layer->MinTopBlobs(), layer->ExactNumTopBlobs());
         for (; num_top < needed_num_top; ++num_top) {
@@ -539,10 +540,29 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           layers_[layer_id]->type()=="Softmax"||
           layers_[layer_id]->type()=="LRN"    ||
           layers_[layer_id]->type()=="BatchNorm"||
-          layers_[layer_id]->type()=="Scale" 
-      
+          layers_[layer_id]->type()=="Scale" ||
+          layers_[layer_id]->type()=="Split" 
        ) 
-      {
+      {     
+         string type11=layer_param.name();
+          //   处于第一条路径的的。
+         if(type11.find("branch1")!=string::nops)
+         {
+              LOG_IF(INFO, Caffe::root_solver())
+              << "" << layers_[layer_id]->type();
+              LOG_IF(INFO, Caffe::root_solver())
+              << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
+              layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_+3,stream_+3);  
+
+         }
+         else  //以及处于节点路径的  处于第二条路径。
+         {
+             LOG_IF(INFO, Caffe::root_solver())
+              << "" << layers_[layer_id]->type();
+              LOG_IF(INFO, Caffe::root_solver())
+              << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
+              layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);  
+         }
          //  对于resnet 不同的网络采用不同的选择
          //  这里面采用正则化匹配的方式
          /*if(layer_names_[layer_id]=="res2a_branch1"||
@@ -566,16 +586,9 @@ void Net<Dtype>::Init(const NetParameter& in_param)
               << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
               layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_+3,stream_+3);
            }
-           else8
+           else
            */
-           {
-              //LOG_IF(INFO, Caffe::root_solver()) << " CuDNNConvolutionLayer ";
-              LOG_IF(INFO, Caffe::root_solver())
-              << "" << layers_[layer_id]->type();
-              LOG_IF(INFO, Caffe::root_solver())
-              << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
-              layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);
-           }
+         
        }  
       else  //   采用默认的不使用任何的流技术
       {
