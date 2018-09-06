@@ -223,7 +223,8 @@ void Solver<Dtype>::Step(int iters)
       }
     }
 
-    for (int i = 0; i < callbacks_.size(); ++i) {
+    for (int i = 0; i < callbacks_.size(); ++i) 
+    {
       callbacks_[i]->on_start();
     }
     const bool display = param_.display() && iter_ % param_.display() == 0;

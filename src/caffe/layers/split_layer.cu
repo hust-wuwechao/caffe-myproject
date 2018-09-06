@@ -28,7 +28,6 @@ void SplitLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     //  接下来都是在流1里面完成的。
   for (int i = 0; i < top.size(); ++i)
   {
-  
     top[i]->ShareData(*bottom[0]);
   }
 }
