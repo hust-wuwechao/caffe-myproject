@@ -104,7 +104,6 @@ class Net
         cudaStreamSynchronize(stream_[g]);  
     } 
     Backward();
-
     // cudaDeviceSynchronize()
      for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
