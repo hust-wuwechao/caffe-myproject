@@ -21,7 +21,9 @@ __global__ void MaxForward(const int nthreads, const Dtype* bottom_data_a,
         maxidx = blob_idx;
         mask[index] = maxidx;
       }
-    } else {
+    }
+     else 
+     {
       maxval = bottom_data_b[index];
       top_data[index] = maxval;
       maxidx = blob_idx + 1;
@@ -47,7 +49,8 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   case EltwiseParameter_EltwiseOp_SUM:
     caffe_gpu_set(count, Dtype(0.), top_data);
     // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
-    for (int i = 0; i < bottom.size(); ++i) {
+    for (int i = 0; i < bottom.size(); ++i) 
+    {
       caffe_gpu_axpy(count, coeffs_[i], bottom[i]->gpu_data(), top_data);
     }
     break;
@@ -110,9 +113,14 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         caffe_gpu_mul(count, bottom_diff, top_diff, bottom_diff);
         break;
       case EltwiseParameter_EltwiseOp_SUM:
-        if (coeffs_[i] == Dtype(1.)) {
+      LOG(INFO)<<"在elem wise层  参数为coeffs_[i]"<<coeffs_[i];
+        if (coeffs_[i] == Dtype(1.)) 
+        {
+          
           caffe_copy(count, top_diff, bottom_diff);
-        } else {
+        } 
+        else 
+        {
           caffe_gpu_scale(count, coeffs_[i], top_diff, bottom_diff);
         }
         break;

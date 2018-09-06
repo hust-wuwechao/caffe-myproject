@@ -54,14 +54,26 @@ void EltwiseLayer<Dtype>::Forward_cpu(
   switch (op_) {
   case EltwiseParameter_EltwiseOp_PROD:
     caffe_mul(count, bottom[0]->cpu_data(), bottom[1]->cpu_data(), top_data);
-    for (int i = 2; i < bottom.size(); ++i) {
+    for (int i = 2; i < bottom.size(); ++i) 
+    {
       caffe_mul(count, top_data, bottom[i]->cpu_data(), top_data);
     }
     break;
   case EltwiseParameter_EltwiseOp_SUM:
     caffe_set(count, Dtype(0), top_data);
-    // TODO(shelhamer) does BLAS optimize to sum for coeff = 1?
-    for (int i = 0; i < bottom.size(); ++i) {
+    //  TODO(shelhamer) 
+    //  does BLAS optimize to sum for coeff = 1?
+    // 这里面bottom size 应该等于2
+    for (int i = 0; i < bottom.size();  ++i) 
+    {
+      /*
+         template <>
+         void caffe_axpy<float>(const int N, const float alpha, const float* X,
+         float* Y) { cblas_saxpy(N, alpha, X, 1, Y, 1); }
+        
+        */
+        //   功能： Y=alpha*X+Y 
+        //   N：为X和Y中element的个数
       caffe_axpy(count, coeffs_[i], bottom[i]->cpu_data(), top_data);
     }
     break;
@@ -129,9 +141,13 @@ void EltwiseLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         caffe_mul(count, bottom_diff, top_diff, bottom_diff);
         break;
       case EltwiseParameter_EltwiseOp_SUM:
-        if (coeffs_[i] == Dtype(1)) {
+        if (coeffs_[i] == Dtype(1)) 
+        {
           caffe_copy(count, top_diff, bottom_diff);
-        } else {
+        } 
+        else 
+        {
+          // 还是直接复制一下的。
           caffe_cpu_scale(count, coeffs_[i], top_diff, bottom_diff);
         }
         break;
