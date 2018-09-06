@@ -541,7 +541,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           layers_[layer_id]->type()=="LRN"    ||
           layers_[layer_id]->type()=="BatchNorm"||
           layers_[layer_id]->type()=="Scale" ||
-          layers_[layer_id]->type()=="Split" 
+          layers_[layer_id]->type()=="Split" ||
+          layers_[layer_id]->type()=="Eltwise"
        ) 
       {     
          string type11=layer_param.name();
