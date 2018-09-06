@@ -56,7 +56,7 @@ void SplitLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     //  创建
     cudaEventCreate(&event);
     cudaEventRecord(event,stream_[3]);
-    cudaStreamWaitEvent(stream_[0],event);
+    cudaStreamWaitEvent(stream_[0],event,0);
     //  cudaEventSynchronize(event);
     //  这样完成了流之间的同步的过程。
     //  接下来都是在流1里面完成的。
