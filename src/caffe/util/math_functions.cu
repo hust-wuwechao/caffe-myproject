@@ -397,7 +397,8 @@ void caffe_gpu_add_scalar1(const int N, const double alpha, double* Y,cudaStream
 template <typename Dtype>
 __global__ void add_kernel(const int n, const Dtype* a,
     const Dtype* b, Dtype* y) {
-  CUDA_KERNEL_LOOP(index, n) {
+  CUDA_KERNEL_LOOP(index, n)
+   {
     y[index] = a[index] + b[index];
   }
 }
@@ -417,6 +418,27 @@ void caffe_gpu_add<double>(const int N, const double* a, const double* b,
   add_kernel<double><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
       N, a, b, y);
 }
+
+template <>
+void caffe_gpu_add1<float>(const int N, const float* a, const float* b,
+    float* y,cudaStream_t &stream)
+{
+  // NOLINT_NEXT_LINE(whitespace/operators)
+  add_kernel<float><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0,stream>>>(
+      N, a, b, y);
+}
+
+template <>
+void caffe_gpu_add1<double>(const int N, const double* a, const double* b,
+    double* y,cudaStream_t &stream) 
+{
+  // NOLINT_NEXT_LINE(whitespace/operators)
+  add_kernel<double><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS,0,stream>>>(
+      N, a, b, y);
+}
+
+
+
 
 template <typename Dtype>
 __global__ void sub_kernel(const int n, const Dtype* a,

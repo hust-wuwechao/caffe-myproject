@@ -47,11 +47,23 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     }
     break;
   case EltwiseParameter_EltwiseOp_SUM:
-    caffe_gpu_set(count, Dtype(0.), top_data);
+    //  先进行stream的同步。
+    //  stream[0]和stream[3]
+    //  接下来stream[0]等待这2个完成
+    //  只需要加一个的事件等待。
+    //  声明
+    cudaEvent_t event;
+    //  创建
+    cudaEventCreate(&event);
+    cudaEventRecord(event,stream_[3])
+    cudaStreamWaitEvent(stream_[0],event);
+    //  这样完成了流之间的同步的过程。
+    //  接下来都是在流1里面完成的。
+    caffe_gpu_set1(count, Dtype(0.), top_data,stream_[0]);
     // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
     for (int i = 0; i < bottom.size(); ++i) 
     {
-      caffe_gpu_axpy(count, coeffs_[i], bottom[i]->gpu_data(), top_data);
+      caffe_gpu_axpy1(count, coeffs_[i], bottom[i]->gpu_data(), top_data,handle_[0]);
     }
     break;
   case EltwiseParameter_EltwiseOp_MAX:
@@ -116,12 +128,11 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       LOG(INFO)<<"在elem wise层  参数为coeffs_[i]"<<coeffs_[i];
         if (coeffs_[i] == Dtype(1.)) 
         {
-          
-          caffe_copy(count, top_diff, bottom_diff);
+          caffe_copy1(count, top_diff, bottom_diff,stream_[0]);
         } 
         else 
         {
-          caffe_gpu_scale(count, coeffs_[i], top_diff, bottom_diff);
+          caffe_gpu_scale1(count, coeffs_[i], top_diff, bottom_diff,handle_[0]);
         }
         break;
       case EltwiseParameter_EltwiseOp_MAX:

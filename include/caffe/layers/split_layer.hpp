@@ -30,14 +30,23 @@ class SplitLayer : public Layer<Dtype> {
  protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+
+  virtual void LayerSetUP1(const vector<Blob<Dtype>*>& bottom,onst vector<Blob<Dtype>*>& top,
+  cudnnHandle_t* habdle,
+  cudaStream_t* stream)
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
   int count_;
+  cudaStream_t*     stream_;
+  cublasHandle_t*   handle_;
+
+
 };
 
 }  // namespace caffe

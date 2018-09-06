@@ -4,6 +4,41 @@
 #include "caffe/util/math_functions.hpp"
 
 namespace caffe {
+#define CUDNN_STREAMS_PER_GROUP 3
+#define GROUP 1
+template <typename Dtype>
+void SplitLayer<Dtype>::LayerSetUp1(
+     const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t*  handle,
+      cudaStream_t*   stream) 
+{
+
+
+}
+
+template <typename Dtype>
+void SplitLayer<Dtype>::LayerSetUp1(
+     const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t*  handle,
+      cudaStream_t*   stream) 
+{
+  stream_=stream;
+  handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  // 自己创建handle
+  // 并且和和流进行绑定
+  // 我们仍然创建3个。
+  // 其中第一个为优先级最高
+  // 第二，3个问优先级最低
+  for(int i=0;i<1;i++)
+  {
+    cublasCreate(&handle_[i]);
+    cublasSetStream(handle_[i],  stream_[i]);
+  }
+}   
+
+
 
 template <typename Dtype>
 void SplitLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,

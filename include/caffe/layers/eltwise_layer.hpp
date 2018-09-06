@@ -22,6 +22,11 @@ class EltwiseLayer : public Layer<Dtype> {
       : Layer<Dtype>(param) {}
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+  virtual void LayerSetUp1(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top,
+      cudnnHandle_t*  handle, 
+      cudaStream_t*  stream);
+
   virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
@@ -42,7 +47,8 @@ class EltwiseLayer : public Layer<Dtype> {
   EltwiseParameter_EltwiseOp op_;
   vector<Dtype> coeffs_;
   Blob<int> max_idx_;
-
+  cudnnHandle_t*   handle_;
+  cudaStream_t*    stream_;
   bool stable_prod_grad_;
 };
 
