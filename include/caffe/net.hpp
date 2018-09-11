@@ -32,7 +32,7 @@ class Net
 
   /// @brief Initialize a network with a NetParameter.
   void Init(const NetParameter& param);
-  void Init_back_VGG(const NetParameter& in_param);
+  void Init_back_resnet(const NetParameter& in_param);
 
 
   /**
