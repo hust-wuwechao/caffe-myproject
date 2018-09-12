@@ -139,10 +139,10 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const Dtype* label = bottom[1]->gpu_data();
     // 等于 C*H*W q 其中H=W=1 
     // 假设输入为  10*1000*1*1
-    LOG(INFO)<<"outer_num_  "<<outer_num_<<"   dim  "<<outer_num_<<"  inner_num_   "<<inner_num_<<"  prob_.count()  "<<prob_.count();
     
+    //  prob_.count()=10*1000
     const int dim = prob_.count() / outer_num_;
-
+     LOG(INFO)<<"outer_num_  "<<outer_num_<<"   dim  "<<outer_num_<<"  inner_num_   "<<inner_num_<<"  prob_.count()  "<<prob_.count();
     // 等于N*C*H*W  其实就是N 
     const int nthreads = outer_num_ * inner_num_;
     // Since this memory is never used for anything else,
