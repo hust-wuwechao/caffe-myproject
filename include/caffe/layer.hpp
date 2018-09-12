@@ -100,6 +100,9 @@ class Layer {
    * <code>Reshape</code>, which will be called before the forward pass to
    * adjust the top blob sizes.
    */
+  //   然后具体的set UP由父类方法可以去调用子类。
+  //   将他设置为虚方法。这样子类可以进行直接调用。
+
   virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) 
       {}

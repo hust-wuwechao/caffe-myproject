@@ -223,15 +223,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       // After this layer is connected, set it up.
 
 
-      
-
-      
-      
-
-
-
-      //  这里面是原始的版本。正对于VGG有效
-
+    //  进行层的设置问题。
+      //  这里面是原始的版本。正对于VGG有效, 对于Alexnet有效.
       if(layers_[layer_id]->type()=="Convolution"||
           layers_[layer_id]->type()=="ReLU"||
           layers_[layer_id]->type()=="Pooling"||
@@ -247,14 +240,13 @@ void Net<Dtype>::Init(const NetParameter& in_param)
           << "" << layers_[layer_id]->type();
           LOG_IF(INFO, Caffe::root_solver())
           << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
+          // 调用父类的方法。
           layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id],handle_,stream_);
       }  
       else 
-      {
-        
+      {      
         LOG_IF(INFO, Caffe::root_solver())
           << "" << layers_[layer_id]->type();
-
         LOG_IF(INFO, Caffe::root_solver())
           << "typeid(x).name() "<<typeid(*layers_[layer_id]).name();
         layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);

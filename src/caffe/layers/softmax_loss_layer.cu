@@ -8,7 +8,6 @@
 namespace caffe {
 
 
-
 __global__ void sync_conv_groups_softmax_with_loss() 
 {     }
 
@@ -67,6 +66,7 @@ void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
   SoftmaxLossForwardGPU<Dtype><<<CAFFE_GET_BLOCKS(nthreads),
       CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(nthreads, prob_data, label, loss_data,
       outer_num_, dim, inner_num_, has_ignore_label_, ignore_label_, counts);
+  // 定义在CPU段的。
   Dtype loss;
   // 对于损失的值进行相加
   caffe_gpu_asum1(nthreads, loss_data, &loss,handle_[0]);
@@ -188,11 +188,11 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       //  得到归一化德损失，实际是所有样本的损失的和，除以有效样本数目。
     const Dtype loss_weight = top[0]->cpu_diff()[0] /
                               get_normalizer(normalization_, valid_count);
-     //     获得。。。。。。 y = alpha*x 
-    LOG(INFO)<<"  loss_weight  "<<loss_weight;
+    //     获得。。。。。。 y = alpha*x 
+    // LOG(INFO)<<"  loss_weight  "<<loss_weight;
+    // LOG(INFO)<<"  top[0]->cpu_diff()[0]"<<top[0]->cpu_diff()[0];
+    // LOG(INFO)<<"  get_normalizer(normalization_, valid_count)  "<<get_normalizer(normalization_, valid_count);
     caffe_gpu_scal1(prob_.count(), loss_weight , bottom_diff,handle_[0]);
-   
-
   }
 }
 
