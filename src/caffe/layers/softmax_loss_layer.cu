@@ -95,7 +95,7 @@ __global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype* top,
   CUDA_KERNEL_LOOP(index, nthreads) 
   {
     //   spatial_dim=1
-    LOG(INFO)<<""
+    //LOG(INFO)<<""
     const int n = index / spatial_dim;
     //  属于几号分类索引
     const int s = index % spatial_dim;
