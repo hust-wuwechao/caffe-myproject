@@ -24,7 +24,7 @@ namespace caffe
 {
 
 #define CUDNN_STREAMS_PER_GROUP 3
-#define GROUP 1
+#define GROUP 2
 template <typename Dtype>
 Net<Dtype>::Net(const NetParameter& param) {
   Init(param);
