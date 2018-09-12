@@ -242,7 +242,7 @@ void Solver<Dtype>::Step(int iters)
       loss += net_->ForwardBackward();
        //  在这里面加入同步的设置。
        cudaDeviceSynchronize();
-       LOG(INFO) << "Iteration: " << i << " forward-backward time: "
+       LOG(INFO) << "  iter_  Iteration: "<<iter_<<"-"<<i << " forward-backward time: "
       << iter_timer.MilliSeconds() << " ms.";
     }
     loss /= param_.iter_size();
@@ -299,7 +299,7 @@ void Solver<Dtype>::Step(int iters)
       // Break out of training loop.
       break;
     }
-    if(iter_%100==0)
+    if(iter_%10==0)
     {
         LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /
         (iter_*param_.iter_size())<< " ms.";
