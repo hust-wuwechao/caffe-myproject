@@ -285,9 +285,7 @@ void Solver<Dtype>::Step(int iters)
     // Increment the internal iter_ counter -- its value should always indicate
     // the number of times the weights have been updated.
     ++iter_;
-
     SolverAction::Enum request = GetRequestedAction();
-
     // Save a snapshot if needed.
     if ((param_.snapshot()
          && iter_ % param_.snapshot() == 0
@@ -295,10 +293,16 @@ void Solver<Dtype>::Step(int iters)
          (request == SolverAction::SNAPSHOT)) {
       Snapshot();
     }
-    if (SolverAction::STOP == request) {
+    if (SolverAction::STOP == request) 
+    {
       requested_early_exit_ = true;
       // Break out of training loop.
       break;
+    }
+    if(iter_%100==0)
+    {
+        LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /
+        (iter_*param_.iter_size())<< " ms.";
     }
   }
   total_timer.Stop();
