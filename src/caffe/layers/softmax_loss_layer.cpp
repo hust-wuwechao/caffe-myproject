@@ -66,17 +66,19 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp1(
   LOG(INFO)<<"在这里进行调用构造softmax层";
   LOG_IF(INFO, Caffe::root_solver())
         << "typeid(x).name() "<<typeid(&softmax_layer_).name();
-
+  //  加入bottom[0]
   softmax_bottom_vec_.clear();
   softmax_bottom_vec_.push_back(bottom[0]);
+  //  加入prob_
   softmax_top_vec_.clear();
   softmax_top_vec_.push_back(&prob_);
+  // 上面为啥要这么做？ 为了接口统一。
   softmax_layer_->LayerSetUp1(softmax_bottom_vec_, softmax_top_vec_,handle,stream);
   has_ignore_label_ =
     this->layer_param_.loss_param().has_ignore_label();
   // 将一些标签默认不学习
   if (has_ignore_label_)
- {
+  {
     ignore_label_ = this->layer_param_.loss_param().ignore_label();
   }
   if (!this->layer_param_.loss_param().has_normalization() &&
