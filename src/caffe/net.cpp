@@ -407,8 +407,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   
   // 设置流为，0，1，2，3，4，5
-  // 其中  0，1，3， 为主要路径
-  //  3 4 5
+  // 其中  0，1，2， 为主要路径
+  //  3 4 5 为第二条路径
   // 其中0 为默认最高的优先级
   // 反向的时候，0应该放到激活值计算里面。 
   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)

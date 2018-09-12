@@ -54,9 +54,9 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     //  声明
     cudaEvent_t event;
     //  创建
-    cudaEventCreate(&event);
-    cudaEventRecord(event,stream_[3]);
-    cudaStreamWaitEvent(stream_[0],event,0);
+    //cudaEventCreate(&event);
+    //cudaEventRecord(event,stream_[3]);
+    //cudaStreamWaitEvent(stream_[0],event,0);
     //  这样完成了流之间的同步的过程。
     //  接下来都是在流1里面完成的。
     caffe_gpu_set1(count, Dtype(0.), top_data,stream_[0]);
@@ -102,7 +102,8 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   const int count = top[0]->count();
   const Dtype* top_data = top[0]->gpu_data();
   const Dtype* top_diff = top[0]->gpu_diff();
-  for (int i = 0; i < bottom.size(); ++i) {
+  for (int i = 0; i < bottom.size(); ++i) 
+  {
     if (propagate_down[i]) {
       const Dtype* bottom_data = bottom[i]->gpu_data();
       Dtype* bottom_diff = bottom[i]->mutable_gpu_diff();
