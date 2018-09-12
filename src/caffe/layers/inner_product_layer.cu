@@ -20,10 +20,10 @@ void InnerProductLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
                          weight, bottom_data, (Dtype)0., top_data,
                          handle_[0]);
     if (bias_term_)
-      caffe_gpu_axpy<Dtype>(N_, bias_multiplier_.cpu_data()[0],
-                            this->blobs_[1]->gpu_data(), top_data);
+      caffe_gpu_axpy1<Dtype>(N_, bias_multiplier_.cpu_data()[0],
+                            this->blobs_[1]->gpu_data(), top_data,handle_[0]);
   } 
-  else   ///
+  else   ///handle_[0]
   {
 
 
@@ -47,6 +47,7 @@ void InnerProductLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
     const vector<Blob<Dtype>*>& bottom) 
 {
+  // 存在参数？
   if (this->param_propagate_down_[0]) 
   {
     const Dtype* top_diff = top[0]->gpu_diff();

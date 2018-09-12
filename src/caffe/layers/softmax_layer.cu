@@ -123,7 +123,8 @@ void SoftmaxLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       CAFFE_CUDA_NUM_THREADS,0,stream_[0]>>>(count, outer_num_, channels, inner_num_,
       scale_data, top_data);
 }
-
+// 其实在software里面并没有用到这一步。
+// 
 template <typename Dtype>
 void SoftmaxLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {

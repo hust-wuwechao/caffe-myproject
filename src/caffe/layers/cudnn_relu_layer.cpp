@@ -32,6 +32,7 @@ void CuDNNReLULayer<Dtype>::LayerSetUp1(
   ReLULayer<Dtype>::LayerSetUp(bottom, top);
   // initialize cuDNN
   handle_=handle;
+  stream_=stream;
   //CUDNN_CHECK(cudnnCreate(&handle_));
   cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
   cudnn::createTensor4dDesc<Dtype>(&top_desc_);

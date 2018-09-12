@@ -71,9 +71,10 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp1(
   softmax_bottom_vec_.push_back(bottom[0]);
   softmax_top_vec_.clear();
   softmax_top_vec_.push_back(&prob_);
-  softmax_layer_->SetUp(softmax_bottom_vec_, softmax_top_vec_,handle,stream);
+  softmax_layer_->LayerSetUp1(softmax_bottom_vec_, softmax_top_vec_,handle,stream);
   has_ignore_label_ =
     this->layer_param_.loss_param().has_ignore_label();
+  // 将一些标签默认不学习
   if (has_ignore_label_)
  {
     ignore_label_ = this->layer_param_.loss_param().ignore_label();
@@ -159,21 +160,26 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
   Dtype loss = 0;
   //  首先认为所有的损失都是0
   //  batch 大小
+  //  每一个样本
   for (int i = 0; i < outer_num_; ++i) 
   {
-    //  =1
+    //  inner_num_=1   j 始终为0，所以这里面存在误导性质
     for (int j = 0; j < inner_num_; j++) 
     {
-      //  
+      //   得到标签的值
       const int label_value = static_cast<int>(label[i * inner_num_ + j]);
+      //   等于这个标签，则忽略
       if (has_ignore_label_ && label_value == ignore_label_) 
       {
         continue;
       }
+      //标签的值在0--类别数目之间
       DCHECK_GE(label_value, 0);
       DCHECK_LT(label_value, prob_.shape(softmax_axis_));
       //  损失等于+
       //  样本原本的标签的值对应的概率的然后选择取 log ()
+      //  得到样本的标签的值。
+      //  标签对应的位置的值
       loss -= log(std::max(prob_data[i * dim + label_value * inner_num_ + j],
                            Dtype(FLT_MIN)));
       ++count;

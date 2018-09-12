@@ -64,6 +64,7 @@ void InnerProductLayer<Dtype>::LayerSetUp1(
 {
   stream_=stream;
   handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  // 创建3个handle。
   for(int i=0;i<3;i++)
   {
     cublasCreate(&handle_[i]);

@@ -390,7 +390,8 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   default:
     LOG(FATAL) << "Unknown pooling method.";
   }
-  sync_pool_back<<<1, 1>>>();
+ 
+  //sync_pool_back<<<1, 1>>>();
   CUDA_POST_KERNEL_CHECK;
 }
 

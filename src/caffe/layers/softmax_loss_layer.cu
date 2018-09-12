@@ -37,10 +37,14 @@ template <typename Dtype>
 void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) 
 {
+  // 得到前向的值
   softmax_layer_->Forward(softmax_bottom_vec_, softmax_top_vec_);
   const Dtype* prob_data = prob_.gpu_data();
+  // 标签的值
   const Dtype* label = bottom[1]->gpu_data();
+  // 得到C*H*W
   const int dim = prob_.count() / outer_num_;
+  // 
   const int nthreads = outer_num_ * inner_num_;
   // Since this memory is not used for anything, we use it here to avoid having
   // to allocate new GPU memory to accumulate intermediate results.
@@ -74,7 +78,7 @@ void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
   }
 
   // Clear scratch memory to prevent interfering with backward (see #6202).
-  
+  //
   caffe_gpu_set1(bottom[0]->count(), Dtype(0), bottom[0]->mutable_gpu_diff(),stream_[0]);
   //  这里面应该需要进行流的同步问题。
   //  其实并不需要的。sync_conv_groups_softmax_with_loss<<<1, 1>>>();
@@ -87,18 +91,28 @@ __global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype* top,
           const int spatial_dim, const bool has_ignore_label_,
           const int ignore_label_, Dtype* counts) {
   const int channels = dim / spatial_dim;
-
-  CUDA_KERNEL_LOOP(index, nthreads) {
+   LOG(INFO)<<"spatial_dim   "<<spatial_dim<<"dim  "<<dim <<" channels"<<channels;
+  CUDA_KERNEL_LOOP(index, nthreads) 
+  {
+    //   spatial_dim=1
+    LOG(INFO)<<""
     const int n = index / spatial_dim;
+    //  属于几号分类索引
     const int s = index % spatial_dim;
+    //   得到
     const int label_value = static_cast<int>(label[n * spatial_dim + s]);
-
-    if (has_ignore_label_ && label_value == ignore_label_) {
-      for (int c = 0; c < channels; ++c) {
+    // 假设这个标签呼略，这个样本的梯度都是0
+    if (has_ignore_label_ && label_value == ignore_label_)
+     {
+      // 内部通道数目
+      for (int c = 0; c < channels; ++c) 
+      {
         bottom_diff[n * dim + c * spatial_dim + s] = 0;
       }
       counts[index] = 0;
-    } else {
+    } 
+    else 
+    {
       bottom_diff[n * dim + label_value * spatial_dim + s] -= 1;
       counts[index] = 1;
     }
@@ -117,12 +131,19 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     Dtype* bottom_diff = bottom[0]->mutable_gpu_diff();
     const Dtype* prob_data = prob_.gpu_data();
     const Dtype* top_data = top[0]->gpu_data();
+    //  prob_data-----存在 bottom_diff。
+    //  由于求导之后，等于prob_data 或者prob_data-1
+    //  因而直接判断进行加一减去1即可。
     caffe_gpu_memcpy(prob_.count() * sizeof(Dtype), prob_data, bottom_diff);
+    // 获取标签
     const Dtype* label = bottom[1]->gpu_data();
+    // 等于 C*H*W
     const int dim = prob_.count() / outer_num_;
+    // 等于N*C*H*W
     const int nthreads = outer_num_ * inner_num_;
     // Since this memory is never used for anything else,
     // we use to to avoid allocating new GPU memory.
+    //  借用pro的存储空间，作为中间值
     Dtype* counts = prob_.mutable_gpu_diff();
     // NOLINT_NEXT_LINE(whitespace/operators)
     SoftmaxLossBackwardGPU<Dtype><<<CAFFE_GET_BLOCKS(nthreads),
@@ -135,11 +156,13 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     if (normalization_ == LossParameter_NormalizationMode_VALID &&
         has_ignore_label_) 
     {
+      //  计算 vector x 的所有element的绝对值之和。
       caffe_gpu_asum1(nthreads, counts, &valid_count,handle_[0]);
     }
+    //  y = alpha*x 
     const Dtype loss_weight = top[0]->cpu_diff()[0] /
                               get_normalizer(normalization_, valid_count);
-    // 
+    // 获得。。。。。。
     caffe_gpu_scal1(prob_.count(), loss_weight , bottom_diff,handle_[0]);
    
 
