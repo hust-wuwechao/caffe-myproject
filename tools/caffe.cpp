@@ -385,6 +385,8 @@ int time() {
       layers[i]->Forward(bottom_vecs[i], top_vecs[i]);
       //forward_time_per_layer[i] += timer.MicroSeconds();
     }
+
+    
     //forward_time += forward_timer.MicroSeconds();
     // backward_timer.Start();
     for (int i = layers.size() - 1; i >= 0; --i) 

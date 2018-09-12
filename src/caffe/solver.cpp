@@ -133,7 +133,9 @@ void Solver<Dtype>::InitTestNets() {
   if (num_generic_nets) {
       CHECK_GE(param_.test_iter_size(), num_test_nets)
           << "test_iter must be specified for each test network.";
-  } else {
+  } 
+  else 
+  {
       CHECK_EQ(param_.test_iter_size(), num_test_nets)
           << "test_iter must be specified for each test network.";
   }
@@ -185,7 +187,8 @@ void Solver<Dtype>::InitTestNets() {
     NetState net_state;
     net_state.set_phase(TEST);
     net_state.MergeFrom(net_params[i].state());
-    if (param_.test_state_size()) {
+    if (param_.test_state_size()) 
+    {
       net_state.MergeFrom(param_.test_state(i));
     }
     net_params[i].mutable_state()->CopyFrom(net_state);
@@ -208,7 +211,8 @@ void Solver<Dtype>::Step(int iters)
   losses_.clear();
   smoothed_loss_ = 0;
   iteration_timer_.Start();
-
+  Timer total_timer;
+  total_timer.Start();
   while (iter_ < stop_iter) 
   {
     // zero-init the params
@@ -297,6 +301,13 @@ void Solver<Dtype>::Step(int iters)
       break;
     }
   }
+  total_timer.Stop();
+  /*  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
+    FLAGS_iterations << " ms.";
+  LOG(INFO) << "Average Backward pass: " << backward_time / 1000 /
+    FLAGS_iterations << " ms."; */
+  LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /
+  stop_iter<< " ms.";
 }
 
 template <typename Dtype>
