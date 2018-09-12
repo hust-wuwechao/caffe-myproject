@@ -159,7 +159,7 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     //  prob_.count()=10*1000
     // dim =C*H*W
     const int dim = prob_.count() / outer_num_;
-     LOG(INFO)<<"outer_num_  "<<outer_num_<<"  inner_num_  "<<inner_num_<<"  dim  "<<dim<<"  prob_.count()  "<<prob_.count();
+     //LOG(INFO)<<"outer_num_  "<<outer_num_<<"  inner_num_  "<<inner_num_<<"  dim  "<<dim<<"  prob_.count()  "<<prob_.count();
     // 等于N*C*H*W  其实就是N 
     //  10个线程而已。
 
