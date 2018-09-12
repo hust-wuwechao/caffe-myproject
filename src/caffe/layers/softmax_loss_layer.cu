@@ -91,7 +91,7 @@ __global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype* top,
           const int spatial_dim, const bool has_ignore_label_,
           const int ignore_label_, Dtype* counts) {
   const int channels = dim / spatial_dim;
-   LOG(INFO)<<"spatial_dim   "<<spatial_dim<<"dim  "<<dim <<" channels"<<channels;
+  //LOG(INFO)<<"spatial_dim   "<<spatial_dim<<"dim  "<<dim <<" channels"<<channels;
   CUDA_KERNEL_LOOP(index, nthreads) 
   {
     //   spatial_dim=1
@@ -138,6 +138,7 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     // 获取标签
     const Dtype* label = bottom[1]->gpu_data();
     // 等于 C*H*W
+    LOG(INFO)<<"outer_num_   "<<outer_num_<<"dim "<<outer_num_;
     const int dim = prob_.count() / outer_num_;
     // 等于N*C*H*W
     const int nthreads = outer_num_ * inner_num_;
