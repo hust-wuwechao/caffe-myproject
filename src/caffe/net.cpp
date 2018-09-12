@@ -24,7 +24,7 @@ namespace caffe
 {
 
 #define CUDNN_STREAMS_PER_GROUP 3
-#define GROUP 2
+#define GROUP 1
 template <typename Dtype>
 Net<Dtype>::Net(const NetParameter& param) {
   Init(param);
@@ -156,15 +156,10 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
       LOG(INFO)<<"layer_id"<<layer_id;
       if (!param.layer(layer_id).has_phase()) 
-      {
-
-        
+      {    
         param.mutable_layer(layer_id)->set_phase(phase_);
-
-
       }
       // Setup layer.
-
       const LayerParameter& layer_param = param.layer(layer_id);
       if (layer_param.propagate_down_size() > 0) 
       {
@@ -174,19 +169,11 @@ void Net<Dtype>::Init(const NetParameter& in_param)
             << "propagate_down param must be specified "
             << "either 0 or bottom_size times ";
       }
-
-
       layers_.push_back(LayerRegistry<Dtype>::CreateLayer(layer_param));
-
       layer_names_.push_back(layer_param.name());
-
       LOG_IF(INFO, Caffe::root_solver())
           << "Creating Layer " << layer_param.name();
-
       bool need_backward = false;
-      
-    
-
       // Figure out this layer's input and output
       for (int bottom_id = 0; bottom_id < layer_param.bottom_size();
           ++bottom_id) 
@@ -213,7 +200,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       if (layer->AutoTopBlobs()) {
         const int needed_num_top =
             std::max(layer->MinTopBlobs(), layer->ExactNumTopBlobs());
-        for (; num_top < needed_num_top; ++num_top) {
+        for (; num_top < needed_num_top; ++num_top) 
+        {
           // Add "anonymous" top blobs -- do not modify available_blobs or
           // blob_name_to_idx as we don't want these blobs to be usable as input
           // to other layers.

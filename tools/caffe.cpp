@@ -372,8 +372,8 @@ int time() {
   Timer timer;
   std::vector<double> forward_time_per_layer(layers.size(), 0.0);
   std::vector<double> backward_time_per_layer(layers.size(), 0.0);
-  double forward_time = 0.0;
-  double backward_time = 0.0;
+  // double forward_time = 0.0;
+  // double backward_time = 0.0;
   for (int j = 0; j < FLAGS_iterations; ++j) 
   {
     Timer iter_timer;
@@ -394,7 +394,7 @@ int time() {
                           bottom_vecs[i]);
       //backward_time_per_layer[i] += timer.MicroSeconds();
     }
-    //cudaDeviceSynchronize();
+    cudaDeviceSynchronize();
     //backward_time += backward_timer.MicroSeconds();
      LOG(INFO) << "Iteration: " << j + 1 << " forward-backward time: "
       << iter_timer.MilliSeconds() << " ms."; 
