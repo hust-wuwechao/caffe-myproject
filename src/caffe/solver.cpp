@@ -209,7 +209,8 @@ void Solver<Dtype>::Step(int iters)
   smoothed_loss_ = 0;
   iteration_timer_.Start();
 
-  while (iter_ < stop_iter) {
+  while (iter_ < stop_iter) 
+  {
     // zero-init the params
     net_->ClearParamDiffs();
     if (param_.test_interval() && iter_ % param_.test_interval() == 0
@@ -222,7 +223,6 @@ void Solver<Dtype>::Step(int iters)
         break;
       }
     }
-
     for (int i = 0; i < callbacks_.size(); ++i) 
     {
       callbacks_[i]->on_start();
@@ -233,14 +233,16 @@ void Solver<Dtype>::Step(int iters)
     Dtype loss = 0;
     for (int i = 0; i < param_.iter_size(); ++i) 
     {
+      Timer iter_timer;
+      iter_timer.Start();
       loss += net_->ForwardBackward();
        //  在这里面加入同步的设置。
-       //cudaDeviceSynchronize();
+       cudaDeviceSynchronize();
+       LOG(INFO) << "Iteration: " << i << " forward-backward time: "
+      << iter_timer.MilliSeconds() << " ms.";
     }
     loss /= param_.iter_size();
     // average the loss across iterations for smoothed reporting
-
-
     UpdateSmoothedLoss(loss, start_iter, average_loss);
     if (display) 
     {
@@ -276,7 +278,6 @@ void Solver<Dtype>::Step(int iters)
       callbacks_[i]->on_gradients_ready();
     }
     ApplyUpdate();
-
     // Increment the internal iter_ counter -- its value should always indicate
     // the number of times the weights have been updated.
     ++iter_;
