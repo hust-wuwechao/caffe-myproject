@@ -49,7 +49,7 @@ Net<Dtype>::Net(const string& param_file, Phase phase,
 
 
 template <typename Dtype>
-void Net<Dtype>::Init(const NetParameter& in_param)
+void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
  {
         // Set phase from the state.
 
@@ -398,7 +398,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
 
 
 template <typename Dtype>
-void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
+void Net<Dtype>::Init(const NetParameter& in_param)
 {    
   int priority_low;
   int priority_hi;
