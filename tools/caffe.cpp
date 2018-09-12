@@ -344,6 +344,7 @@ int time() {
     Caffe::set_mode(Caffe::CPU);
   }
   // Instantiate the caffe net.
+  //  初始化一个网络。
   Net<float> caffe_net(FLAGS_model, phase, FLAGS_level, &stages);
 
   // Do a clean forward and backward pass, so that memory allocation are done
@@ -393,7 +394,7 @@ int time() {
                           bottom_vecs[i]);
       //backward_time_per_layer[i] += timer.MicroSeconds();
     }
-     cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
     //backward_time += backward_timer.MicroSeconds();
      LOG(INFO) << "Iteration: " << j + 1 << " forward-backward time: "
       << iter_timer.MilliSeconds() << " ms."; 
