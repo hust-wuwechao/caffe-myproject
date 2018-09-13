@@ -1019,17 +1019,17 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
       before_forward_[c]->run(i);
     }
     // 在 split层之间进行同步，由于split层无法使用流
-     std::string  name_11=layer_names_[i];
-     int  pos;
+     //std::string  name_11=layer_names_[i];
+     //int  pos;
      //如果是split 层的话，同样需要计算完了之前同步一下。
-    if(name_11.find("split")!=-1||layers_[i]->type()=="Eltwise")
-    {
+    //if(name_11.find("split")!=-1||layers_[i]->type()=="Eltwise")
+    //{
        //流进行同步。    
-       for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
-       {
-          cudaStreamSynchronize(stream_[g]);
-       }
-    }
+       //for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+       //{
+         // cudaStreamSynchronize(stream_[g]);
+       //}
+    //}
     //  返回损失。
     Dtype layer_loss = layers_[i]->Forward(bottom_vecs_[i], top_vecs_[i]);
    /*  LOG_IF(INFO, Caffe::root_solver())
@@ -1089,8 +1089,10 @@ template <typename Dtype>
 void Net<Dtype>::BackwardFromTo(int start, int end) {
   CHECK_GE(end, 0);
   CHECK_LT(start, layers_.size());
-  for (int i = start; i >= end; --i) {
-    for (int c = 0; c < before_backward_.size(); ++c) {
+  for (int i = start; i >= end; --i) 
+  {
+    for (int c = 0; c < before_backward_.size(); ++c) 
+    {
       before_backward_[c]->run(i);
     }
     if (layer_need_backward_[i]) 
@@ -1238,11 +1240,15 @@ void Net<Dtype>::BackwardTo(int end) {
 }
 
 template <typename Dtype>
-void Net<Dtype>::Backward() {
+void Net<Dtype>::Backward()
+ {
   BackwardFromTo(layers_.size() - 1, 0);
-  if (debug_info_) {
+
+  if (debug_info_) 
+  {
     Dtype asum_data = 0, asum_diff = 0, sumsq_data = 0, sumsq_diff = 0;
-    for (int i = 0; i < learnable_params_.size(); ++i) {
+    for (int i = 0; i < learnable_params_.size(); ++i) 
+    {
       asum_data += learnable_params_[i]->asum_data();
       asum_diff += learnable_params_[i]->asum_diff();
       sumsq_data += learnable_params_[i]->sumsq_data();

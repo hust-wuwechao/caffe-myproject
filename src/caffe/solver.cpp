@@ -241,7 +241,7 @@ void Solver<Dtype>::Step(int iters)
       iter_timer.Start();
       loss += net_->ForwardBackward();
        //  在这里面加入同步的设置。
-       cudaDeviceSynchronize();
+       //  cudaDeviceSynchronize();
        LOG(INFO) << "  iter_  Iteration: "<<iter_<<"-"<<i << " forward-backward time: "
       << iter_timer.MilliSeconds() << " ms.";
     }
@@ -405,19 +405,25 @@ void Solver<Dtype>::Test(const int test_net_id) {
     if (param_.test_compute_loss()) {
       loss += iter_loss;
     }
-    if (i == 0) {
+    if (i == 0) 
+    {
       for (int j = 0; j < result.size(); ++j) {
         const Dtype* result_vec = result[j]->cpu_data();
-        for (int k = 0; k < result[j]->count(); ++k) {
+        for (int k = 0; k < result[j]->count(); ++k) 
+        {
           test_score.push_back(result_vec[k]);
           test_score_output_id.push_back(j);
         }
       }
-    } else {
+    } 
+    else 
+    {
       int idx = 0;
-      for (int j = 0; j < result.size(); ++j) {
+      for (int j = 0; j < result.size(); ++j)
+       {
         const Dtype* result_vec = result[j]->cpu_data();
-        for (int k = 0; k < result[j]->count(); ++k) {
+        for (int k = 0; k < result[j]->count(); ++k) 
+        {
           test_score[idx++] += result_vec[k];
         }
       }
