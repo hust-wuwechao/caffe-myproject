@@ -18,12 +18,12 @@ void SplitLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     //  接下来stream[0]等待这2个完成
     //  只需要加一个的事件等待。
     //  声明
-    cudaEvent_t event;
+    //cudaEvent_t event;
     //  创建
-    cudaEventCreate(&event);
-    cudaEventRecord(event,stream_[0]);
+    //cudaEventCreate(&event);
+    //cudaEventRecord(event,stream_[0]);
     //cudaStreamWaitEvent(stream_[0],event);
-    cudaEventSynchronize(event);
+    // cudaEventSynchronize(event);
     //  这样完成了流之间的同步的过程。
     //  接下来都是在流1里面完成的。
   for (int i = 0; i < top.size(); ++i)
@@ -51,11 +51,11 @@ void SplitLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     //  接下来stream[0]等待这2个完成
     //  只需要加一个的事件等待。
     //  声明
-    cudaEvent_t event;
+    // cudaEvent_t event;
     //  创建
-    cudaEventCreate(&event);
-    cudaEventRecord(event,stream_[3]);
-    cudaStreamWaitEvent(stream_[0],event,0);
+    //cudaEventCreate(&event);
+    //cudaEventRecord(event,stream_[3]);
+    //cudaStreamWaitEvent(stream_[0],event,0);
     //  cudaEventSynchronize(event);
     //  这样完成了流之间的同步的过程。
     //  接下来都是在流1里面完成的。
