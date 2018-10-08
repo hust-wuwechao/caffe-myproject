@@ -217,9 +217,10 @@ void Solver<Dtype>::Step(int iters)
   iteration_timer_.Start();
   //Timer total_timer;
   //total_timer.Start();
-  cudaProfilerStart();
+  //cudaProfilerStart();
   while (iter_ < stop_iter) 
   {
+    //if(iter_=5)
     // zero-init the params
     net_->ClearParamDiffs();
     if (param_.test_interval() && iter_ % param_.test_interval() == 0
@@ -310,7 +311,7 @@ void Solver<Dtype>::Step(int iters)
         (iter_*param_.iter_size())<< " ms.";
     } */
   }
-  cudaProfilerStop();
+  //cudaProfilerStop();
   //total_timer.Stop();
   /*  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
     FLAGS_iterations << " ms.";
