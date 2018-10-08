@@ -245,7 +245,7 @@ void Solver<Dtype>::Step(int iters)
     {
       //Timer iter_timer;
       //iter_timer.Start();
-     LOG(INFO) << "  iter_  Iteration: "<<iter_<<"-"<<i ;
+      LOG(INFO) << "  iter_  Iteration: "<<iter_<<"-"<<i ;
       loss += net_->ForwardBackward();
        //  在这里面加入同步的设置。
        //  cudaDeviceSynchronize();
