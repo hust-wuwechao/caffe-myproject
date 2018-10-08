@@ -24,7 +24,7 @@ namespace caffe
 {
 
 #define CUDNN_STREAMS_PER_GROUP 3
-#define GROUP 2
+#define GROUP 1
 template <typename Dtype>
 Net<Dtype>::Net(const NetParameter& param) {
   Init(param);
@@ -49,7 +49,7 @@ Net<Dtype>::Net(const string& param_file, Phase phase,
 
 
 template <typename Dtype>
-void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
+void Net<Dtype>::Init(const NetParameter& in_param)
  {
         // Set phase from the state.
 
@@ -398,7 +398,7 @@ void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
 
 
 template <typename Dtype>
-void Net<Dtype>::Init(const NetParameter& in_param)
+void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
 {    
   int priority_low;
   int priority_hi;
@@ -1100,7 +1100,8 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
       //if()
       if(i==1)
       {
-        layers_[i]->Backward(
+        layers_[i]->Backward
+        (
           top_vecs_[i], bottom_need_backward_[i], bottom_vecs_[i]);
         //  这里面应该加入流同步的内容
         //  是的进行下一次计算时候。
