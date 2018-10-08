@@ -209,7 +209,7 @@ void Solver<Dtype>::InitTestNets() {
 template <typename Dtype>
 void Solver<Dtype>::Step(int iters)
  {
-   const int start_iter = iter_;
+  const int start_iter = iter_;
   const int stop_iter = iter_ + iters;
   int average_loss = this->param_.average_loss();
   losses_.clear();
@@ -253,7 +253,7 @@ void Solver<Dtype>::Step(int iters)
     loss /= param_.iter_size();
     // average the loss across iterations for smoothed reporting
     UpdateSmoothedLoss(loss, start_iter, average_loss);
-    if (display) 
+    /* if (display) 
     {
       float lapse = iteration_timer_.Seconds();
       float per_s = (iter_ - iterations_last_) / (lapse ? lapse : 1);
@@ -282,8 +282,9 @@ void Solver<Dtype>::Step(int iters)
               << result_vec[k] << loss_msg_stream.str();
         }
       }
-    }
-    for (int i = 0; i < callbacks_.size(); ++i) {
+    } */
+    for (int i = 0; i < callbacks_.size(); ++i) 
+    {
       callbacks_[i]->on_gradients_ready();
     }
     ApplyUpdate();
