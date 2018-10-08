@@ -214,7 +214,7 @@ void Solver<Dtype>::Step(int iters)
   int average_loss = this->param_.average_loss();
   losses_.clear();
   smoothed_loss_ = 0;
-  iteration_timer_.Start();
+  //iteration_timer_.Start();
   //Timer total_timer;
   //total_timer.Start();
   cudaProfilerStart();
