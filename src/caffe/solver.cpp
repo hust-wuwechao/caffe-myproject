@@ -35,7 +35,8 @@ Solver<Dtype>::Solver(const SolverParameter& param)
 
 template <typename Dtype>
 Solver<Dtype>::Solver(const string& param_file)
-    : net_(), callbacks_(), requested_early_exit_(false) {
+    : net_(), callbacks_(), requested_early_exit_(false)
+     {
   SolverParameter param;
   ReadSolverParamsFromTextFileOrDie(param_file, &param);
   Init(param);
@@ -65,10 +66,12 @@ void Solver<Dtype>::Init(const SolverParameter& param) {
 // into the train and test nets.
 template <typename Dtype>
 void LoadNetWeights(shared_ptr<Net<Dtype> > net,
-    const std::string& model_list) {
+    const std::string& model_list) 
+{
   std::vector<std::string> model_names;
   boost::split(model_names, model_list, boost::is_any_of(","));
-  for (int i = 0; i < model_names.size(); ++i) {
+  for (int i = 0; i < model_names.size(); ++i) 
+  {
     boost::trim(model_names[i]);
     LOG(INFO) << "Finetuning from " << model_names[i];
     net->CopyTrainedLayersFrom(model_names[i]);
@@ -100,7 +103,8 @@ void Solver<Dtype>::InitTrainNet()
         << "Creating training net specified in net_param.";
     net_param.CopyFrom(param_.net_param());
   }
-  if (param_.has_net()) {
+  if (param_.has_net()) 
+  {
     LOG_IF(INFO, Caffe::root_solver())
         << "Creating training net from net file: " << param_.net();
     ReadNetParamsFromTextFileOrDie(param_.net(), &net_param);
@@ -213,7 +217,7 @@ void Solver<Dtype>::Step(int iters)
   //iteration_timer_.Start();
   //Timer total_timer;
   //total_timer.Start();
-  cudaProfilerStart();
+  //cudaProfilerStart();
   while (iter_ < stop_iter) 
   {
     // zero-init the params
@@ -306,7 +310,7 @@ void Solver<Dtype>::Step(int iters)
         (iter_*param_.iter_size())<< " ms.";
     } */
   }
-  cudaProfilerStop();
+  //cudaProfilerStop();
   //total_timer.Stop();
   /*  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
     FLAGS_iterations << " ms.";
