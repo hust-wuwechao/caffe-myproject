@@ -220,7 +220,8 @@ void Solver<Dtype>::Step(int iters)
   cudaProfilerStart();
   while (iter_ < stop_iter) 
   {
-    // zero-init the params
+    //  
+    //  zero-init the params
     net_->ClearParamDiffs();
     if (param_.test_interval() && iter_ % param_.test_interval() == 0
         && (iter_ > 0 || param_.test_initialization())) {
@@ -244,11 +245,13 @@ void Solver<Dtype>::Step(int iters)
     {
       //Timer iter_timer;
       //iter_timer.Start();
+     LOG(INFO) << "  iter_  Iteration: "<<iter_<<"-"<<i ;
       loss += net_->ForwardBackward();
        //  在这里面加入同步的设置。
        //  cudaDeviceSynchronize();
-      /*  LOG(INFO) << "  iter_  Iteration: "<<iter_<<"-"<<i << " forward-backward time: "
-      << iter_timer.MilliSeconds() << " ms."; */
+      
+      //<< " forward-backward time: "
+      //<< iter_timer.MilliSeconds() << " ms."; */
     }
     loss /= param_.iter_size();
     // average the loss across iterations for smoothed reporting
