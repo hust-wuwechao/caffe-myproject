@@ -100,10 +100,12 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     {
       if(g%3==0)
       { 
+        //  0 优先级最高
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
       }
       else
       {
+        // 其他优先级次要
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
       }
       //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
@@ -116,24 +118,17 @@ void Net<Dtype>::Init(const NetParameter& in_param)
     // Filter layers based on their include/exclude rules and
     // the current NetState.
     NetParameter filtered_param;
-
     FilterNet(in_param, &filtered_param);
-
     LOG_IF(INFO, Caffe::root_solver())
         << "Initializing net from parameters: " << std::endl
         << filtered_param.DebugString();
     // Create a copy of filtered_param with splits added where necessary.
-    
     NetParameter param;
-
     InsertSplits(filtered_param, &param);
-
     // Basically, build all the layers and set up their connections.
     name_ = param.name();
-
     map<string, int> blob_name_to_idx;
     set<string> available_blobs;
-
     memory_used_ = 0;
     // For each layer, set up its input and output
 
@@ -241,17 +236,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
         layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
 
       } 
-
-
-
-      //   修改后的版本；  针对resnet来做
-      //   也就是说 可以存在多个路径 。这里面用2作为例子。
-      //
-      
-
-
-
-      LOG_IF(INFO, Caffe::root_solver())
+        LOG_IF(INFO, Caffe::root_solver())
           << "Setting up " << layer_names_[layer_id];
       for (int top_id = 0; top_id < top_vecs_[layer_id].size(); ++top_id) {
         if (blob_loss_weights_.size() <= top_id_vecs_[layer_id][top_id]) {
