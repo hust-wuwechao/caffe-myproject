@@ -217,7 +217,7 @@ void Solver<Dtype>::Step(int iters)
   // iteration_timer_.Start();
  //  Timer total_timer;
  //  total_timer.Start();
-  cudaProfilerStart();
+  //cudaProfilerStart();
   while (iter_ < stop_iter) {
     // zero-init the params
     net_->ClearParamDiffs();
@@ -306,7 +306,7 @@ void Solver<Dtype>::Step(int iters)
     } */
 
   }
-  cudaProfilerStop();
+  //cudaProfilerStop();
   //total_timer.Stop();
   //LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /stop_iter<< " ms.";
 

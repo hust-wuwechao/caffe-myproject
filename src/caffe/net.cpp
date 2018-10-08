@@ -51,28 +51,12 @@ Net<Dtype>::Net(const string& param_file, Phase phase,
 template <typename Dtype>
 void Net<Dtype>::Init(const NetParameter& in_param)
  {
-        // Set phase from the state.
-
-
-        // 初始化流参数。
-        /*
-          int priority_low;
-          int priority_hi;
-          checkCudaErrors(cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi));
-
-          printf("CUDA stream priority range: LOW: %d to HIGH: %d\n",priority_low,priority_hi);
-
-          // create streams with highest and lowest available priorities
-          cudaStream_t st_low;
-          cudaStream_t st_hi;
-          checkCudaErrors(cudaStreamCreateWithPriority(&st_low, cudaStreamNonBlocking, priority_low));
-          checkCudaErrors(cudaStreamCreateWithPriority(&st_hi,  cudaStreamNonBlocking, priority_hi));
-      */
+       
   int priority_low;
   int priority_hi;
   cudaDeviceGetStreamPriorityRange(&priority_low, &priority_hi);
-  stream_  =  new cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
-  handle_  =  new cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  stream_  =  new  cudaStream_t[GROUP*CUDNN_STREAMS_PER_GROUP];
+  handle_  =  new  cudnnHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
   //    第一个方案。我们这里面讨论使用3个流。
   
   /* for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
@@ -96,7 +80,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   // 设置流为，0，1，2，3，4，5
   // 其中  0，1，3， 为主要路径
   //  3 4 5 
-  for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+    for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
       if(g%3==0)
       { 
@@ -113,7 +97,6 @@ void Net<Dtype>::Init(const NetParameter& in_param)
       CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
       //workspace[g] = NULL;
     } 
-
     phase_ = in_param.state().phase();
     // Filter layers based on their include/exclude rules and
     // the current NetState.
