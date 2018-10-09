@@ -82,7 +82,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   //  3 4 5 
     for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
-     /*  if(g%3==0)
+       if(g%3==0)
       { 
         //  0 优先级最高
         //cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
@@ -93,8 +93,8 @@ void Net<Dtype>::Init(const NetParameter& in_param)
         // 其他优先级次要
         //cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
-      } */
-      CUDA_CHECK(cudaStreamCreate(&stream_[g]));
+      } 
+      //CUDA_CHECK(cudaStreamCreate(&stream_[g]));
       CUDNN_CHECK(cudnnCreate(&handle_[g]));
       CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
       //workspace[g] = NULL;
