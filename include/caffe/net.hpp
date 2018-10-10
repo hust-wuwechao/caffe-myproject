@@ -14,7 +14,7 @@
 #include<cuda_profiler_api.h>
 namespace caffe {
 #define CUDNN_STREAMS_PER_GROUP 3
-#define GROUP 1
+#define GROUP 2
 /**
  * @brief Connects Layer%s together into a directed acyclic graph (DAG)
  *        specified by a NetParameter.
