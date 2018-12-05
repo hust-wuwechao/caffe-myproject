@@ -71,7 +71,7 @@ void BatchNormLayer<Dtype>::LayerSetUp1(
   //  所以我们改成了1.
   stream_=stream;
   handle_=new cublasHandle_t[GROUP*CUDNN_STREAMS_PER_GROUP];
-  for(int i=0;i<3;i++)
+  for(int i=0;i<1;i++)
   {
     cublasCreate(&handle_[i]);
     cublasSetStream(handle_[i],  stream_[i]);
