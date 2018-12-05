@@ -385,7 +385,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
       
-       if(g%3==0)
+      if(g<3)
       { 
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
       }
@@ -499,7 +499,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
        ) 
       {     
          string type11=layer_param.name();
-          //   处于第一条路径的的。
+          //   处于第一条路径的的。短的路径。
          if(type11.find("branch1")>=0)
          {
               LOG_IF(INFO, Caffe::root_solver())
