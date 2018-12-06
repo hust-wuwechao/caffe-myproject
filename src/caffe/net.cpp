@@ -385,13 +385,13 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
       
-      if(g<3)
+      if(g%3)
       { 
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
       }
       else
       {
-        cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
+        cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
       } 
       CUDA_CHECK(cudaStreamCreate(&stream_[g]));
       CUDNN_CHECK(cudnnCreate(&handle_[g]));
