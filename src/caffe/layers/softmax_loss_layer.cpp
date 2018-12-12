@@ -210,7 +210,6 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();
     const Dtype* prob_data = prob_.cpu_data();
     //  首先，bottom  diff的值就是softmax  的输出值。
-
     caffe_copy(prob_.count(), prob_data, bottom_diff);
     const Dtype* label = bottom[1]->cpu_data();
     int dim = prob_.count() / outer_num_;
@@ -238,7 +237,10 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         }
       }
     }
-    // Scale gradient
+    //  Scale gradient
+    //  
+    //  
+    LOG(INFO)<<" top[0]->cpu_diff()[0] "<< top[0]->cpu_diff()[0]<<"count"<<count;
     Dtype loss_weight = top[0]->cpu_diff()[0] /
                         get_normalizer(normalization_, count);
     caffe_scal(prob_.count(), loss_weight, bottom_diff);
