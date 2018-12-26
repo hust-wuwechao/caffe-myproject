@@ -49,7 +49,7 @@ Net<Dtype>::Net(const string& param_file, Phase phase,
 
 
 template <typename Dtype>
-void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
+void Net<Dtype>::Init(const NetParameter& in_param)
  {
        
   int priority_low;
@@ -82,9 +82,9 @@ void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
   //  3 4 5 
     for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
-      /*  if(g%3==0)
+     if(g%3==0)
       { 
-        //  0 优先级最高
+         //  0 优先级最高
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_hi);
         //cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
       }
@@ -368,7 +368,7 @@ void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
 
 
 template <typename Dtype>
-void Net<Dtype>::Init(const NetParameter& in_param)
+void Net<Dtype>::Init_back_resnet(const NetParameter& in_param)
 {    
   int priority_low;
   int priority_hi;
@@ -382,7 +382,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
   // 3   4   5 为第二条路径
   // 其中0   为默认最高的优先级
   // 反向的时候，0应该放到激活值计算里面。 
-  for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
+   for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
       
       if(g%3)
