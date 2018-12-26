@@ -93,7 +93,7 @@ void Net<Dtype>::Init(const NetParameter& in_param)
         // 其他优先级次要
         //cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
         cudaStreamCreateWithPriority(&stream_[g], cudaStreamNonBlocking, priority_low);
-      }  */
+      }  
       CUDA_CHECK(cudaStreamCreate(&stream_[g]));
       CUDNN_CHECK(cudnnCreate(&handle_[g]));
       CUDNN_CHECK(cudnnSetStream(handle_[g], stream_[g]));
