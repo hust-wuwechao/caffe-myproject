@@ -186,7 +186,7 @@ void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       //  得到一个常数的值。
       
       //  得到归一化德损失，实际是所有样本的损失的和，除以有效样本数目。
-    LOG(INFO)<<" top[0]->cpu_diff()[0] "<< top[0]->cpu_diff()[0]<<" count   "<<valid_count;  
+    //LOG(INFO)<<" top[0]->cpu_diff()[0] "<< top[0]->cpu_diff()[0]<<" count   "<<valid_count;  
     const Dtype loss_weight = top[0]->cpu_diff()[0] /
                               get_normalizer(normalization_, valid_count);
     //     获得。。。。。。 y = alpha*x 
