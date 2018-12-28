@@ -1002,6 +1002,13 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
        //}
     //}
     //  返回损失。
+     cudaEvent_t event;
+    //  创建
+     cudaEventCreate(&event);
+     cudaEventRecord(event,stream_[0]);
+     cudaStreamWaitEvent(stream_[1],event,0);
+     cudaStreamWaitEvent(stream_[1],event,0);
+    //  cudaEventSynchronize(event);
     Dtype layer_loss = layers_[i]->Forward(bottom_vecs_[i], top_vecs_[i]);
    /*  LOG_IF(INFO, Caffe::root_solver())
         << "typeid(x).name() "<<typeid(*layers_[i]).name();  */
@@ -1062,6 +1069,7 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
   CHECK_LT(start, layers_.size());
   for (int i = start; i >= end; --i) 
   {
+
     for (int c = 0; c < before_backward_.size(); ++c) 
     {
       before_backward_[c]->run(i);
