@@ -103,13 +103,14 @@ class Net
     {
         cudaStreamSynchronize(stream_[g]);  
     } 
-    //cudaProfilerStart();
+    cudaProfilerStart();
     Backward();
     // cudaDeviceSynchronize()
      for (int g = 0; g < GROUP * CUDNN_STREAMS_PER_GROUP; g++)
     {
        cudaStreamSynchronize(stream_[g]);  
     } 
+    cudaProfilerStop();
     //cudaProfilerStart(); 
     //这里面会同步指定的流。
     return loss;
