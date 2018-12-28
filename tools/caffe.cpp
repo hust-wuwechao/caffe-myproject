@@ -416,7 +416,7 @@ int time() {
       "\tbackward: " << backward_time_per_layer[i] / 1000 /
       FLAGS_iterations << " ms.";
   } */
-  total_timer.Stop();
+   total_timer.Stop();
    /*  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
     FLAGS_iterations << " ms.";
     LOG(INFO) << "Average Backward pass: " << backward_time / 1000 /
