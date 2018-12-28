@@ -392,6 +392,7 @@ int time() {
     
     //forward_time += forward_timer.MicroSeconds();
     // backward_timer.Start();
+   /*
     for (int i = layers.size() - 1; i >= 0; --i) 
     {
       //timer.Start();
@@ -399,7 +400,8 @@ int time() {
                           bottom_vecs[i]);
       //backward_time_per_layer[i] += timer.MicroSeconds();
     }
-    //cudaDeviceSynchronize();
+    */
+    cudaDeviceSynchronize();
     //backward_time += backward_timer.MicroSeconds();
      LOG(INFO) << "Iteration: " << j + 1 << " forward-backward time: "
       << iter_timer.MilliSeconds() << " ms."; 

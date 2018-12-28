@@ -1070,13 +1070,19 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
   for (int i = start; i >= end; --i) 
   {
 
+    
     for (int c = 0; c < before_backward_.size(); ++c) 
     {
       before_backward_[c]->run(i);
     }
     if (layer_need_backward_[i]) 
     {
-      //if()
+       cudaEvent_t event;
+    
+       cudaEventCreate(&event);
+       cudaEventRecord(event,stream_[0]);
+       cudaStreamWaitEvent(stream_[1],event,0);
+       cudaStreamWaitEvent(stream_[2],event,0);
       if(i==1)
       {
         layers_[i]->Backward
