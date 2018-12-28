@@ -415,11 +415,11 @@ int time() {
       FLAGS_iterations << " ms.";
   } */
   total_timer.Stop();
- /*  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
+   /*  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
     FLAGS_iterations << " ms.";
-  LOG(INFO) << "Average Backward pass: " << backward_time / 1000 /
+    LOG(INFO) << "Average Backward pass: " << backward_time / 1000 /
     FLAGS_iterations << " ms."; */
-  LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /
+   LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /
     FLAGS_iterations << " ms.";
   LOG(INFO) << "Total Time: " << total_timer.MilliSeconds() << " ms.";
   LOG(INFO) << "*** Benchmark ends ***";

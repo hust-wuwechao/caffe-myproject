@@ -1007,7 +1007,7 @@ Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
      cudaEventCreate(&event);
      cudaEventRecord(event,stream_[0]);
      cudaStreamWaitEvent(stream_[1],event,0);
-     cudaStreamWaitEvent(stream_[1],event,0);
+     cudaStreamWaitEvent(stream_[2],event,0);
     //  cudaEventSynchronize(event);
     Dtype layer_loss = layers_[i]->Forward(bottom_vecs_[i], top_vecs_[i]);
    /*  LOG_IF(INFO, Caffe::root_solver())
