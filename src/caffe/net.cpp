@@ -1078,11 +1078,11 @@ void Net<Dtype>::BackwardFromTo(int start, int end) {
     if (layer_need_backward_[i]) 
     {
      
-       cudaEvent_t event;
-       //cudaEventCreate(&event);
-       //cudaEventRecord(event,stream_[0]);
-      // cudaStreamWaitEvent(stream_[1],event,0);
-      // cudaStreamWaitEvent(stream_[2],event,0);
+      cudaEvent_t event;
+      cudaEventCreate(&event);
+      cudaEventRecord(event,stream_[0]);
+      cudaStreamWaitEvent(stream_[1],event,0);
+      cudaStreamWaitEvent(stream_[2],event,0);
       if(i==1)
       {
         layers_[i]->Backward
